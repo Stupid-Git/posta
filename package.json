@@ -1,0 +1,20 @@
+{
+  "name": "posta",
+  "version": "1.0.0",
+  "description": "TR4 to Webstorage app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.6.0",
+    "config": "^1.29.4",
+    "delay": "^2.0.0",
+    "jsonfile": "^4.0.0",
+    "lexical-scope": "^1.2.0",
+    "noble-device": "^1.4.1",
+    "request": "^2.83.0"
+  }
+}

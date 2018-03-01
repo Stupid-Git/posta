@@ -1,0 +1,10 @@
+*.bak
+/_ref/
+/node_modules
+/TR-4BLE_SOHコマンド仕様.doc
+/ＢＬＥ通信フォーマット Ver1.9.xlsx
+/xprint.txt
+/xtext.txt
+/raspberryBoot.txt
+/myfile.txt
+/example.txt
