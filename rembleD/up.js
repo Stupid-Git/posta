@@ -1,7 +1,9 @@
 var events = require('events');
 var util = require('util');
 
-function up() {
+function TdUp(id) {
+    this.id = id;
+
     this.U_DAT_len = 0;
     this.U_DAT_blocks = 0;
     this.U_DAT_checked = 0;
@@ -18,10 +20,10 @@ function up() {
     this.U_cfm_send_func = null;
 }
 
-util.inherits(up, events.EventEmitter);
+util.inherits(TdUp, events.EventEmitter);
 
 
-up.prototype.send_u_cfm = function(data20, callback)
+TdUp.prototype.send_u_cfm = function(data20, callback)
 {
     //console.log('send_u_cfm: data20[1] =', data20[1])
     if(this.U_cfm_send_func) {
@@ -31,7 +33,7 @@ up.prototype.send_u_cfm = function(data20, callback)
     }
 }
 
-up.prototype.set_send_u_cfm = function( thefunc )
+TdUp.prototype.set_send_u_cfm = function( thefunc )
 {
     this.U_cfm_send_func = thefunc;
 }
@@ -42,7 +44,7 @@ const UP_BLK_MISSING = 2;
 const UP_CS_OK = 1;
 const UP_CS_ERROR = 3;
 
-up.prototype.check_u_dat = function()
+TdUp.prototype.check_u_dat = function()
 {
     var i;
 
@@ -96,7 +98,7 @@ up.prototype.check_u_dat = function()
     
 }
 
-up.prototype.push_resend = function( max )
+TdUp.prototype.push_resend = function( max )
 {
     var newly_pushed = 0;
     var idx = 0;
@@ -118,7 +120,7 @@ up.prototype.push_resend = function( max )
     return(newly_pushed);
 }
 
-up.prototype.on_up_timer = function()
+TdUp.prototype.on_up_timer = function()
 {
     this.U_timerActive = 0;
 //console.log('on_up_timer')
@@ -181,7 +183,7 @@ up.prototype.on_up_timer = function()
 }
 
 
-up.prototype.kick_up_timer = function(param, timeout)
+TdUp.prototype.kick_up_timer = function(param, timeout)
 {
     if(this.U_TimerHandle != 0) {
         clearTimeout(this.U_TimerHandle);
@@ -200,18 +202,18 @@ up.prototype.kick_up_timer = function(param, timeout)
     this.U_TimerHandle = setTimeout( this.on_up_timer.bind(this) , timeout);
 }
 
-up.prototype.Get_on_u_cmd = function()
+TdUp.prototype.Get_on_u_cmd = function()
 {
     this.on_u_cmd_binded = this.on_u_cmd.bind(this);
     return( this.on_u_cmd_binded )
 }
-up.prototype.Get_on_u_dat = function()
+TdUp.prototype.Get_on_u_dat = function()
 {
     this.on_u_dat_binded = this.on_u_dat.bind(this);
     return( this.on_u_dat_binded )
 }
-//up.prototype.on_u_dat = function(pkt20)
-up.prototype.on_u_dat = function(blk)
+//TdUp.prototype.on_u_dat = function(pkt20)
+TdUp.prototype.on_u_dat = function(blk)
 {
     var pkt20 = blk.data;
     var device = blk.device;
@@ -251,7 +253,7 @@ up.prototype.on_u_dat = function(blk)
         u_cfm20[1] = 0; // 0 is OK
         this.send_u_cfm( u_cfm20, () => {} ); // u_cfm on OK (1,0)
 
-        this.emit('up:packet', 'Packet OK', this.U_PKT );
+        this.emit('up:packet', 'Packet OK', { id: this.id, pkt : this.U_PKT} );
         /* TODO
         var idAndPkt = { id : rbstate.idOrLocalName, pkt : this.U_PKT };
         device.emit(UPPKTRDY_DEV, idAndPkt);
@@ -264,12 +266,12 @@ up.prototype.on_u_dat = function(blk)
         u_cfm20[1] = 1; // 1 is Error
         this.send_u_cfm( u_cfm20, () => {} ); // u_cfm on Error (1,1)
 
-        this.emit('up:packet', 'Packet NG', null);
+        this.emit('up:packet', 'Packet NG', { id: this.id, pkt : null});
     }
 }
 
 
-up.prototype.on_u_cmd = function(pkt20)
+TdUp.prototype.on_u_cmd = function(pkt20)
 {
 //console.log('on_u_cmd: pkt20 =', pkt20);
     var len = (pkt20[3]*256) + pkt20[2];
@@ -294,10 +296,10 @@ up.prototype.on_u_cmd = function(pkt20)
     this.U_seqNum++;
 }
 
-up.prototype.on_disconnect = function() // set to reset state
+TdUp.prototype.on_disconnect = function() // set to reset state
 {
-    console.log('up.prototype.on_disconnect() - placekeeper')
+    console.log('TdUp.prototype.on_disconnect() - placekeeper')
 }
 
-module.exports = up;
+module.exports = TdUp;
 

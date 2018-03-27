@@ -1,7 +1,8 @@
 var events = require('events');
 var util = require('util');
 
-function dn() {
+function dn(id) {
+    this.id = id;
     this.D_DAT_len = 0;
     this.D_DAT_blocks = 0;
     this.D_DAT_Array = [];

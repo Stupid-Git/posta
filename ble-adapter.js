@@ -60,20 +60,21 @@ var events = require('events');
 var util = require('util');
 util.inherits(TdTR4, events.EventEmitter);
 
-function TdTR4( device )
+function TdTR4( device, id )
 {
+    this.id = id;
     this.device = device;
 
     this.canSendCount = 0;
     this.canSend = true;
 
-    this.up = new TdUp();
-    this.dn = new TdDn();
+    this.up = new TdUp(id);
+    this.dn = new TdDn(id);
 
     this.device.on('disconnect', () => {
         this.up.on_disconnect();
         this.dn.on_disconnect();
-        this.emit('tr4:disconnected', 'dummyParam');
+        this.emit('tr4:disconnected', this.id);
 
         console.log('TdTR4: FOR DEBUGGING GOT disconnect. Shutting down soon');
 
@@ -104,10 +105,10 @@ function TdTR4( device )
     //this.write_U_CFM_binded = this.device.write_U_CFM.bind(this);
     this.up.set_send_u_cfm( this.write_U_CFM_Binded );
 
-    this.up.on('up:packet', (status, pkt) => { 
+    this.up.on('up:packet', (status, id_pkt) => { 
         //console.log('up.on(up:packet ...) in TdTR4 funcion contructor: status -> ', status)
         //console.log('')
-        this.emit('tr4:upPacket', status, pkt );
+        this.emit('tr4:upPacket', status, id_pkt );
         //this.disconnect(); // to terminate
     })
 }
@@ -163,7 +164,7 @@ TdTR4.prototype.connect = function(callback)
                 console.log('set notify U_DAT error : ' + error);
         });
 
-        this.emit('tr4:connected', 'dummyData' );
+        this.emit('tr4:connected', this.id );
         callback(null);
 
     }.bind(this) );
@@ -216,12 +217,12 @@ TdTR4.prototype.properSend = function()
 
         console.log('[[[P]]] Start')
 
-        theUp.once('up:packet',(status, pkt) => { 
+        theUp.once('up:packet',(status, id_pkt) => { 
             console.log('[[[P]]] up.on(up:packet ...) -> ', status)
             console.log('[[[P]]] ')
             this.canSend = true;
             //this.canSendCount++;
-            if(status) resolve(status, pkt)
+            if(status) resolve(status, id_pkt)
             else reject("error")
         })
     })

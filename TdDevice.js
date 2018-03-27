@@ -136,19 +136,19 @@ DL.prototype.SendTr4Packet = function( pkt )
     });
 }
 
-DL.prototype.OnTR4_Connected = function()
+DL.prototype.OnTR4_Connected = function( id )
 {
     console.log('OnTR4_Connected')
-    dl.processCmd('proc_Send0x9e', null )
+    dl.processCmd('proc_Send0x9e', id )
 }
-DL.prototype.OnTR4_Disconnected = function()
+DL.prototype.OnTR4_Disconnected = function( id )
 {
     console.log('OnTR4_Disconnected')
 }
-DL.prototype.OnTR4_upPacket = function( status, packet )
+DL.prototype.OnTR4_upPacket = function( status, id_pkt )
 {
     console.log('OnTR4_upPacket')
-    dl.processCmd('proc_OnUpPkt', packet )
+    dl.processCmd('proc_OnUpPkt', id_pkt )
 }
 
 
@@ -161,11 +161,13 @@ DL.prototype.Start = function(id, callback)
             callback(error);
             return;
         }
+        console.log('###########  param id = ', id )
+        console.log('########### device.id = ', device.id )
+        this.tr4 = new TdTR4(device, id);
 
-        this.tr4 = new TdTR4(device);
-        this.tr4.on('tr4:connected', this.OnTR4_Connected.bind(this) )
-        this.tr4.on('tr4:disconnected', this.OnTR4_Disconnected.bind(this) )
-        this.tr4.on('tr4:upPacket', this.OnTR4_upPacket.bind(this) )
+        this.tr4.on('tr4:connected', this.OnTR4_Connected )       // this.tr4.on('tr4:connected', this.OnTR4_Connected.bind(this) )
+        this.tr4.on('tr4:disconnected', this.OnTR4_Disconnected ) // this.tr4.on('tr4:disconnected', this.OnTR4_Disconnected.bind(this) )
+        this.tr4.on('tr4:upPacket', this.OnTR4_upPacket )         // this.tr4.on('tr4:upPacket', this.OnTR4_upPacket.bind(this) )
         
         this.tr4.connect( (error) => {
             //console.log('tr4.connect callback()')
@@ -201,7 +203,8 @@ DL.prototype.processCmd = function( procId, data )
         
         case 'proc_OnUpPkt':
             this.TT_3 = Date.now();
-            var pkt = data;
+            var id = data.id;
+            var pkt = data.pkt;
             if( pkt[1] == 0x9e)
             {
                 P.TS_current = Math.round(Date.now()/1000); // To match P.ch1Raw 

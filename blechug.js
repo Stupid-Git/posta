@@ -144,8 +144,8 @@ onUpPktRdy = function(idAndPkt) {
 
         var sData = proc01.getPkt_69(); // Use this to get the interval
         var sPkt = proc01.makePkt_9f(sData, 0x26243047);
-        remble.doSend(id, sPkt, function(idAndStatus){
-            //console.log('doSend (id = ' + idAndStatus.id + ') status = ' + idAndStatus.status);
+        remble.doSend(id, sPkt, function(id_status){
+            //console.log('doSend (id = ' + id_status.id + ') status = ' + id_status.status);
         });
 
     }
@@ -178,8 +178,8 @@ onUpPktRdy = function(idAndPkt) {
             var sData = proc01.getPkt_48('bytes', P.nSamples * 2);
             var sPkt = proc01.makePkt_9f(sData, 0x26243047);
             P.TS_0 = Date.now();
-            remble.doSend(id, sPkt, function(idAndStatus){
-                //console.log('doSend (id = ' + idAndStatus.id + ') status = ' + idAndStatus.status);
+            remble.doSend(id, sPkt, function(id_status){
+                //console.log('doSend (id = ' + id_status.id + ') status = ' + id_status.status);
             });
         }
         else
@@ -215,9 +215,9 @@ onUpPktRdy = function(idAndPkt) {
             var sData = proc01.getPkt_41(0);
             var sPkt = proc01.makePkt_9f(sData, 0x26243047);
             //proc01.dumpHex(sPkt);
-            remble.doSend(id, sPkt, function(idAndStatus){
-                //console.log('doSend (id = ' + idAndStatus.id + ') status = ' + idAndStatus.status);
-                //callback(idAndStatus);
+            remble.doSend(id, sPkt, function(id_status){
+                //console.log('doSend (id = ' + id_status.id + ') status = ' + id_status.status);
+                //callback(id_status);
             });
         }
         else
@@ -280,23 +280,23 @@ setTimeout(function(){
     delay = 1;
     setTimeout(function(){
 
-        remble.doDiscover_ConnectAndSetup(id, function(idAndStatus) {
+        remble.doDiscover_ConnectAndSetup(id, function(id_status) {
 
-            var status = idAndStatus.status;
+            var status = id_status.status;
             //console.log('');
             //console.log('var id = ' + id );
-            console.log('ConnectionStatus (id = ' + idAndStatus.id + ') connected? = ' + idAndStatus.status);
+            console.log('ConnectionStatus (id = ' + id_status.id + ') connected? = ' + id_status.status);
 
-            device = remble.get_NobleDevFromID(idAndStatus.id);
+            device = remble.get_NobleDevFromID(id_status.id);
             device.on('disconnect', onDisconnect );
             device.on('upPktRdy:dev',onUpPktRdy);
         
             if(status)
             {
                 var sPkt = [0x01, 0x9e,0x00, 0x00,0x00 ,0xce,0x94];
-                remble.doSend(idAndStatus.id, sPkt, function(idAndStatus){
-                    //console.log('doSend (id = ' + idAndStatus.id + ') status = ' + idAndStatus.status);
-                    //callback(idAndStatus);
+                remble.doSend(id_status.id, sPkt, function(id_status){
+                    //console.log('doSend (id = ' + id_status.id + ') status = ' + id_status.status);
+                    //callback(id_status);
                 });
             }
         });

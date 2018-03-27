@@ -17,9 +17,33 @@ const SCANSTARTED_REM      = 'scanStarted:rem';       // Up
 const SCANSTOPPED_REM      = 'scanStopped:rem';       // Up
 
 // MODIFY THIS WITH THE APPROPRIATE URL
-var socket = require('socket.io-client')('http://localhost:8088');
-
 var noble = require('noble');
+
+/*
+var socket = require('socket.io-client')('http://localhost:8088');
+var plug_sio = null;
+*/
+var Plug_Sio = require('./plug_sio');
+var plug_sio = new Plug_Sio();
+plug_sio_setup();
+function plug_sio_setup()
+{
+console.log('plug_sio_setup')
+    plug_sio.do_startScanning = do_startScanning;
+    plug_sio.do_stopScanning = do_stopScanning;
+
+    noble.on('scanStart', plug_sio.on_scanStart_callback.bind(plug_sio));
+    noble.on('scanStop', plug_sio.on_scanStop_callback.bind(plug_sio));
+    noble.on('discover', plug_sio.on_discover_callback.bind(plug_sio));  
+
+
+    plug_sio.do_connect = do_connect;       // ( id )
+    plug_sio.do_disconnect = do_disconnect; // ( id )
+    plug_sio.do_DNPKT_REM = do_DNPKT_REM;   // ( id_pkt )
+    
+}
+
+
 
 process.on("SIGINT", function(){
   console.log("SIGINT - Exiting ...");
@@ -34,6 +58,7 @@ process.on("SIGINT", function(){
 
 //--------------------------------------------------
 //https://www.jaredwolff.com/blog/raspberry-pi-getting-interactive-with-your-server-using-websockets/
+/*
 socket.on('example-ping', function(data) {
     console.log("ping");
 
@@ -60,6 +85,7 @@ socket.on('fromC-pong', function(data){
 		data = { user :'client', msg : _msg};
     	io.sockets.emit('toW-pong', data);
 });
+*/
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //  Example Stuff (End)
@@ -172,7 +198,7 @@ var CONNECTIONSTATUS_REM = 'connectionStatus:rem';  // Up
 
 
 let devArray = [];
-
+/*
 class UpBridge {
 
     constructor(id) {
@@ -183,33 +209,61 @@ class UpBridge {
         this.OnTR4_Disconnected_Binded = this.OnTR4_Disconnected.bind(this);
     }
 
-    OnTR4_upPacket ( status, packet ) {
-        //console.log("OnTR4_upPacket");
-        var idAndPkt = {id: this.id, pkt : packet}
-        console.log('OnTR4_upPacket (id = ' + this.id + ') pkt.len = ' + packet.length);
-        socket.emit(UPPKT_REM, idAndPkt);
+    OnTR4_upPacket ( status, id_pkt ) {
+        console.log('OnTR4_upPacket (id = ' + id_pkt.id + ') pkt.len = ' + id_pkt.pkt.length);
+        socket.emit(UPPKT_REM, id_pkt);
     }
 
-    OnTR4_Connected() {
-        var idAndStatus = { id : this.id, status : true };
-        console.log("OnTR4_Connected: idAndStatus =", idAndStatus);
-        socket.emit(CONNECTIONSTATUS_REM, idAndStatus);    
+    OnTR4_Connected( id ) {
+        var id_status = { id : this.id, status : true };
+        console.log("OnTR4_Connected: id_status =", id_status);
+        socket.emit(CONNECTIONSTATUS_REM, id_status);    
     }
 
-    OnTR4_Disconnected() {
+    OnTR4_Disconnected( id ) {
         //console.log("OnTR4_Disconnected");
-        var idAndStatus = { id : this.id, status : false };
-        console.log("OnTR4_Disconnected: idAndStatus =", idAndStatus);
-        socket.emit(CONNECTIONSTATUS_REM, idAndStatus);    
+        //var id_status = { id : this.id, status : false };
+        var id_status = { id : id, status : false };
+        console.log("OnTR4_Disconnected: id_status =", id_status);
+        socket.emit(CONNECTIONSTATUS_REM, id_status);    
         devArray[this.id] = null; //{}
     }
 
 }
+*/
 
+G_OnTR4_upPacket = function( status, id_pkt ) {    
+    console.log('OnTR4_upPacket (id = ' + id_pkt.id + ') pkt.len = ' + id_pkt.pkt.length);
+    if(plug_sio == null)
+        socket.emit(UPPKT_REM, id_pkt);
+    else
+        plug_sio.on_UPPKT_callback( id_pkt );
+}
+
+G_OnTR4_Connected = function( id ) {
+    var id_status = { id : id, status : true };
+    console.log("OnTR4_Connected: id_status =", id_status);
+    if(plug_sio == null)
+        socket.emit(CONNECTIONSTATUS_REM, id_status);    
+    else
+        plug_sio.up_connectionStatus(id_status);
+}
+
+G_OnTR4_Disconnected = function( id ) {
+    var id_status = { id : id, status : false };
+    console.log("OnTR4_Disconnected: id_status =", id_status);
+    if(plug_sio == null)
+        socket.emit(CONNECTIONSTATUS_REM, id_status);
+    else
+        plug_sio.up_connectionStatus(id_status);
+
+    devArray[this.id] = null; //{}
+}
 
 function do_connect(id) {
     console.log("[CONNECT_REM] ...");
     
+    let that_id = id;
     BleAdapter.ScanForDevice(id, (error, device) => {
         if(error){
             console.log('Error during ScanForDevice: ', error)
@@ -219,17 +273,21 @@ function do_connect(id) {
 
 console.log('')
 console.log('')
-console.log('do_connect Found Device id =', id)
+console.log('do_connect        id =', id)
+console.log('do_connect   that_id =', that_id)
+console.log('do_connect device.id =', device.id)
+
+        var id = device.id;
 
         devArray[id] = {}
         devArray[id].device = device;
-        devArray[id].tr4 = new TdTR4(device);
-        devArray[id].upBridge = new UpBridge(id);
+        devArray[id].tr4 = new TdTR4(device, id);
+        //devArray[id].upBridge = new UpBridge(id);
 
         var _tr4 = devArray[id].tr4;
-        var _upBridge = devArray[id].upBridge;
+        //var _upBridge = devArray[id].upBridge;
         
-        _tr4.on('tr4:connected', _upBridge.OnTR4_Connected_Binded )        
+        _tr4.on('tr4:connected', G_OnTR4_Connected ) // _upBridge.OnTR4_Connected_Binded
 
         _tr4.connect( (error) => {
             //console.log('tr4.connect callback()')
@@ -239,8 +297,12 @@ console.log('do_connect Found Device id =', id)
                 callback(error);
             } else {
                 console.log('do_connect Connection OK =', id)
+                /*
                 _tr4.on('tr4:disconnected', _upBridge.OnTR4_Disconnected_Binded )
                 _tr4.on('tr4:upPacket', _upBridge.OnTR4_upPacket_Binded )
+                */
+                _tr4.on('tr4:disconnected', G_OnTR4_Disconnected )
+                _tr4.on('tr4:upPacket', G_OnTR4_upPacket )
                 //callback(null, 'Connected');
             }
 
@@ -258,8 +320,8 @@ function do_disconnect(id) {
         }
     }
 
-    var idAndStatus = { id : id, status : false };
-    socket.emit(CONNECTIONSTATUS_REM, idAndStatus);    
+    var id_status = { id : id, status : false };
+    socket.emit(CONNECTIONSTATUS_REM, id_status);    
 }
 
 function attach_connectRelated() {
@@ -267,7 +329,7 @@ function attach_connectRelated() {
     socket.on(DISCONNECT_REM, do_disconnect );
 
     // e.g. noble.on('scanStart', on_scanStart_callback);
-    socket.on(DNPKT_REM, on_DNPKT_REM );
+    socket.on(DNPKT_REM, do_DNPKT_REM );
 }
 
 function detach_connectRelated() {
@@ -275,7 +337,7 @@ function detach_connectRelated() {
     socket.removeListener(DISCONNECT_REM, do_disconnect );
 
     // e.g. noble.removeListener('scanStart', on_scanStart_callback);
-    socket.removeListener(DNPKT_REM, on_DNPKT_REM );
+    socket.removeListener(DNPKT_REM, do_DNPKT_REM );
 }
 
 
@@ -292,31 +354,22 @@ var UPPKT_REM            = 'upPkt:rem';             // Up
 // DN DN DN DN DN DN DN DN DN DN DN DN DN DN DN DN DN DN DN DN DN DN
 // DN DN DN DN DN DN DN DN DN DN DN DN DN DN DN DN DN DN DN DN DN DN
 
-function on_DNPKT_REM(idAndPkt) {
-    var id = idAndPkt.id;
-    var pkt = idAndPkt.pkt;
-    console.log('on_DNPKT_REM (id = ' + id + ') pkt.len = ' + pkt.length);
-    //var _pkt = [0x01, 0x9e,0x00, 0x00,0x00 ,0xce,0x94];
-    //var idAndPkt = { id : remble.idOrLocalName, pkt : _pkt };
-
+function do_DNPKT_REM(id_pkt) {
+    var id = id_pkt.id;
+    var pkt = id_pkt.pkt;
+    console.log('do_DNPKT_REM (id = ' + id + ') pkt.len = ' + pkt.length);
     
     if(!devArray[id])
         return;
     var _tr4 = devArray[id].tr4;
     if( _tr4 ) {
-        socket.emit(DNPKTSENTCFM_REM, id);
+        if(plug_sio == null)
+            socket.emit(DNPKTSENTCFM_REM, id);
         _tr4.SendPacket( pkt, (error) => {            
 
         });
     }
-
-    //remble.doSend(id, pkt, function(idAndStatus){
-    //    console.log('doSend (id = ' + idAndStatus.id + ') status = ' + idAndStatus.status);
-    //    //callback(idAndStatus);
-    //});
 }
-
-
 
 
 
@@ -331,30 +384,40 @@ RB.prototype.SendTr4Packet = function( pkt )
     this.tr4.SendPacket( pkt, (error) => {
     });
 }
-
-RB.prototype.OnTR4_Connected = function()
-{
-    console.log('OnTR4_Connected')
-    rb.processCmd('proc_Send0x9e', null )
-}
-RB.prototype.OnTR4_Disconnected = function()
-{
-    console.log('OnTR4_Disconnected')
-}
-RB.prototype.OnTR4_upPacket = function( status, packet )
-{
-    console.log('OnTR4_upPacket')
-    rb.processCmd('proc_OnUpPkt', packet )
-}
 */
 
+/*
+RB.prototype.OnTR4_Connected = function( id )
+{
+    var id_status = { id : id, status : true };
+    console.log("OnTR4_Connected: id_status =", id_status);
+    socket.emit(CONNECTIONSTATUS_REM, id_status);    
+}
+
+RB.prototype.OnTR4_Disconnected = function( id ) {
+        //console.log("OnTR4_Disconnected");
+        //var id_status = { id : this.id, status : false };
+        var id_status = { id : id, status : false };
+        console.log("OnTR4_Disconnected: id_status =", id_status);
+        socket.emit(CONNECTIONSTATUS_REM, id_status);    
+        devArray[this.id] = null; //{}
+}
+
+RB.prototype.OnTR4_upPacket = function( status, id_pkt ) {
+    //console.log("OnTR4_upPacket");
+    console.log('OnTR4_upPacket (id = ' + id_pkt.id + ') pkt.len = ' + id_pkt.pkt.length);
+    socket.emit(UPPKT_REM, id_pkt);
+}
+*/
 RB.prototype.processCmd = function( procId, data )
 {
 
     switch(procId){
         case 'proc_Start':
-        attach_scanRelated();
-        attach_connectRelated();
+        if(plug_sio == null) {
+            attach_scanRelated();
+            attach_connectRelated();
+        }
         
 /*        
             this.Start(data.id, (error, param) => {

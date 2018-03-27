@@ -1,8 +1,9 @@
 
 
-var Up = require('./rembleD/up')
+var TdUp = require('./rembleD/up')
 
-var up = new Up();
+var dummyId = 'aabbccddeeff';
+var up = new TdUp(dummyId);
 
 up.on('xxx', (param) => { 
     console.log('up.on(xxx ...) -> ', param)
