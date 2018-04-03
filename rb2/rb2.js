@@ -32,7 +32,8 @@ NobleDevice.Util.inherits(RemoteBle2, NobleDevice);
 NobleDevice.Util.mixin(RemoteBle2, NobleDevice.DeviceInformationService);
 NobleDevice.Util.mixin(RemoteBle2, NobleDevice.HeartRateMeasumentService);
 //NobleDevice.Util.mixin(RemoteBle2, NobleDevice.TandDUpDnService);
-var _TandDUpDnService = require('./remble-tuds');
+//var _TandDUpDnService = require('./remble-tuds');
+var _TandDUpDnService = require('../rembleD/remble-tuds.js');
 NobleDevice.Util.mixin(RemoteBle2, _TandDUpDnService);
 
 
@@ -73,7 +74,7 @@ RemoteBle2.prototype.getData9E01 = function()
 }
 
 
-var RembleBufs = require ('./remble-bufs.js');
+var RembleBufs = require ('../rembleD/remble-bufs.js');
 
 var dBuf = new RembleBufs.Dbuf();
 var uBuf = new RembleBufs.Ubuf();

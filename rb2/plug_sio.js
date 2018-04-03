@@ -35,7 +35,7 @@ const SCANSTOPPED_REM      = 'scanStopped:rem';       // Up
 plug_sio.prototype.on_scanStart_callback = function()
 {
   console.log('on_scanStart_callback');
-  //this.socket.emitsocket.emit(SCANSTARTED_REM, 'Enter Data..');
+  //this.socket.emit(SCANSTARTED_REM, 'Enter Data..');
 }
 
 plug_sio.prototype.on_scanStop_callback = function()
@@ -59,15 +59,15 @@ plug_sio.prototype.on_discover_callback = function(peripheral)
     }
 }
 
-plug_sio.prototype._go_do_startScanning = function() {
+plug_sio.prototype._go_do_startScanning = function( param ) {
     //noble.startScanning();
     if(this.do_startScanning)
-        this.do_startScanning( id );
+        this.do_startScanning( param );
 }
-plug_sio.prototype._go_do_stopScanning = function() {
+plug_sio.prototype._go_do_stopScanning = function( param ) {
     //noble.stopScanning();
     if(this.do_stopScanning)
-        this.do_stopScanning( id );
+        this.do_stopScanning( param );
 }
   
 plug_sio.prototype.attach_scanRelated = function() {
@@ -99,7 +99,7 @@ var CONNECTIONSTATUS_REM = 'connectionStatus:rem';  // Up
 
 var DNPKT_REM            = 'dnPkt:rem';             // Down
 var DNPKTSENTCFM_REM     = 'dnPktSentCfm:rem';      // Up
-var UPPKTRDY_DEV         = 'upPktRdy:dev';          // Up (from noble ...)
+//var UPPKTRDY_DEV         = 'upPktRdy:dev';          // Up (from noble ...)
 var UPPKT_REM            = 'upPkt:rem';             // Up
 
 plug_sio.prototype._go_do_connect = function( id ) {

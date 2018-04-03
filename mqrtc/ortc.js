@@ -59,6 +59,7 @@ function Ortc( dummyParam )
     var pcSettings = [
       {
         iceServers: [{url:'stun:stun.l.google.com:19302'}]
+        //iceServers: [{url:'stun:ocn.cloudns.org:3478'}]
       },
       {
         'optional': [{DtlsSrtpKeyAgreement: false}]
