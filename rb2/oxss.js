@@ -40,8 +40,21 @@ om.on('gotAnswer', (answer) => {
 var o_i = 10;
 var o_text =  'Hello';
 ortc.on('gotData', (dataIn) => {
-    console.log('[O ] got dataIn from crtc = ', dataIn )
-    
+    //console.log('[O ] got dataIn from crtc = ', dataIn )   
+    cmd = dataIn.cmd;
+    switch( dataIn.cmd)
+    {
+        case SCANSTARTED_REM:
+            console.log('Scan Started dataIn =', dataIn);
+            break;
+        case SCANSTOPPED_REM:
+            console.log('Scan Stopped dataIn =', dataIn);
+        break;
+        case SCANDATA_REM:
+            console.log('Scan Data : id = ', dataIn.payload.id );
+            //console.log('Scan Data : ', dataIn.payload );
+            break;
+    }
     /*
     if( o_i > 0)
     {

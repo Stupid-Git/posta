@@ -18,13 +18,13 @@ function plug_sio()
   
     this.attach_connectRelated();
 }
-
+/*
 const SCANSTART_WEB        = 'scanStart:web';         // Down
 const SCANSTOP_WEB         = 'scanStop:web';          // Down
 const SCANDATA_WEB         = 'scanData:web';          // Up
 const SCANSTARTED_WEB      = 'scanStarted:web';       // Up
 const SCANSTOPPED_WEB      = 'scanStopped:web';       // Up
-
+*/
 const SCANSTART_REM        = 'scanStart:rem';         // Down
 const SCANSTOP_REM         = 'scanStop:rem';          // Down
 const SCANDATA_REM         = 'scanData:rem';          // Up
@@ -102,21 +102,30 @@ var DNPKTSENTCFM_REM     = 'dnPktSentCfm:rem';      // Up
 //var UPPKTRDY_DEV         = 'upPktRdy:dev';          // Up (from noble ...)
 var UPPKT_REM            = 'upPkt:rem';             // Up
 
-plug_sio.prototype._go_do_connect = function( id ) {
-    console.log('plug_sio: _go_do_connect: this.do_connect =', this.do_connect);
+plug_sio.prototype._go_do_connect = function( payload ) {
+    var id = payload.id;
+    console.log('plug_sio: _go_do_connect: id = ', id);
     if(this.do_connect)
         this.do_connect( id );
 }
-plug_sio.prototype._go_do_disconnect = function( id ) {
+plug_sio.prototype._go_do_disconnect = function( payload ) {
+    var id = payload.id;
+    console.log('plug_sio: _go_do_disconnect: id = ', id);
     if(this.do_disconnect)
        this.do_disconnect( id );
 }
 plug_sio.prototype.up_connectionStatus = function( id_status ) {
+    var id = id_status.id;
+    var status = id_status.status;
     this.socket.emit(CONNECTIONSTATUS_REM, id_status);    
 }
 
 
 plug_sio.prototype._go_do_DNPKT_REM = function( id_pkt ) {
+    console.log('---------------------------------------------------------------')
+    console.log('_go_do_DNPKT_REM payload = ', id_pkt)
+    console.log('---------------------------------------------------------------')
+    
     if(this.do_DNPKT_REM) {
         this.do_DNPKT_REM( id_pkt );
         this.socket.emit(DNPKTSENTCFM_REM, id_pkt.id);
@@ -124,6 +133,9 @@ plug_sio.prototype._go_do_DNPKT_REM = function( id_pkt ) {
 }
 
 plug_sio.prototype.on_UPPKT_callback = function( id_pkt ) {
+    //console.log('on_UPPKT_callback id_pkt = ', id_pkt)
+    id_pkt.pkt = Buffer.from(id_pkt.pkt);
+    console.log('on_UPPKT_callback id_pkt = ', id_pkt)
     this.socket.emit(UPPKT_REM, id_pkt);
 }
 

@@ -1,4 +1,23 @@
 
+    var CONNECT_REM          = 'connect:rem';           // Down
+    var DISCONNECT_REM       = 'disconnect:rem';        // Down
+    var CONNECTIONSTATUS_REM = 'connectionStatus:rem';  // Up
+
+    var CONNECT_WEB          = 'connect:web';           // Down
+    var DISCONNECT_WEB       = 'disconnect:web';        // Down
+    var CONNECTIONSTATUS_WEB = 'connectionStatus:web';  // Up
+
+
+    var DNPKT_REM            = 'dnPkt:rem';             // Down
+    var DNPKTSENTCFM_REM     = 'dnPktSentCfm:rem';      // Up
+    var UPPKTRDY_DEV         = 'upPktRdy:dev';          // Up (from noble ...)
+    var UPPKT_REM            = 'upPkt:rem';             // Up
+
+    var DNPKT_WEB            = 'dnPkt:web';             // Down
+    var DNPKTSENTCFM_WEB     = 'dnPktSentCfm:web';      // Up
+    var UPPKT_WEB            = 'upPkt:web';             // Up
+
+
 var mqttParam_1 = { mqttServer : 'mqtt://ocn.cloudns.org',
 topic_sendAnswer: 'sendAnswer',
 topic_makeOffer:  'makeOffer'
@@ -26,16 +45,22 @@ cm.sendAnswer( answer );
 
 // that.emit('gotData', data.message )
 crtc.on('gotData', (dataIn) => {
+    //console.log('===================================================================');
+    //console.log('crtc.on(gotData): dataIn = ', dataIn);
     var cmd = dataIn.cmd;
+    //console.log('crtc.on(gotData): cmd = ', cmd);
     var payload = dataIn.payload;
-    console.log('===================================================================');
-    console.log('got data: cmd = ', cmd);
+    //console.log('crtc.on(gotData): payload = ', payload);
 
-    io.emit(cmd, payload);
+    if( cmd == DNPKT_REM) {
+        //console.log('crtc.on(gotData): payload.pkt = ', payload.pkt);
+        //console.log('crtc.on(gotData): payload.pkt.data = ', payload.pkt.data);
 
-    //console.log('[C ] got dataIn from ortc = ', dataIn )
-    //var text = 'And Hello from C side';
-    //crtc.sendData( text );
+        payload.pkt = Buffer.from( payload.pkt );
+        //console.log('crtc.on(gotData): payload = ', payload);
+    }
+    io.emit(cmd, payload); //-> _go_do_DNPKT_REM payload 
+
 });
 
 // OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
@@ -114,39 +139,25 @@ io.sockets.on('connection', function(socket) {
     })
     */
     socket.on(SCANDATA_REM, function(data){		// Up
-        console.log('on - SCANDATA_WEB data = ' + data);
-        var _cmd = SCANDATA_WEB;
+        //console.log('on - SCANDATA_REM data = ' + data);
+        var _cmd = SCANDATA_REM;
+        var _payload = data;
+        var dataOut = { cmd: _cmd, payload : JSON.parse(_payload) };
+        crtc.sendData( dataOut );
+    })
+    socket.on(SCANSTARTED_REM, function(data){	// Up
+        var _cmd = SCANSTARTED_REM;
         var _payload = data;
         var dataOut = { cmd: _cmd, payload : _payload};
-        //io.emit(SCANDATA_WEB, data);
         crtc.sendData( dataOut );
     })
     socket.on(SCANSTOPPED_REM, function(data){	// Up
-        var _cmd = SCANSTOPPED_WEB;
+        var _cmd = SCANSTOPPED_REM;
         var _payload = data;
         var dataOut = { cmd: _cmd, payload : _payload};
-        //io.emit(SCANSTOPPED_WEB, data);
         crtc.sendData( dataOut );
     })
 
-
-    var CONNECT_REM          = 'connect:rem';           // Down
-    var DISCONNECT_REM       = 'disconnect:rem';        // Down
-    var CONNECTIONSTATUS_REM = 'connectionStatus:rem';  // Up
-
-    var CONNECT_WEB          = 'connect:web';           // Down
-    var DISCONNECT_WEB       = 'disconnect:web';        // Down
-    var CONNECTIONSTATUS_WEB = 'connectionStatus:web';  // Up
-
-
-    var DNPKT_REM            = 'dnPkt:rem';             // Down
-    var DNPKTSENTCFM_REM     = 'dnPktSentCfm:rem';      // Up
-    var UPPKTRDY_DEV         = 'upPktRdy:dev';          // Up (from noble ...)
-    var UPPKT_REM            = 'upPkt:rem';             // Up
-
-    var DNPKT_WEB            = 'dnPkt:web';             // Down
-    var DNPKTSENTCFM_WEB     = 'dnPktSentCfm:web';      // Up
-    var UPPKT_WEB            = 'upPkt:web';             // Up
 
 	// message passing ----------------------------------------------------
 
@@ -164,8 +175,8 @@ io.sockets.on('connection', function(socket) {
         var text = 'Unknown';
 		if(data.status === true) text = 'Connected';
 		if(data.status === false) text = 'Disconnected';
-		console.log('on - CONNECTIONSTATUS_REM ' + text);
-        var _cmd = CONNECTIONSTATUS_WEB;
+		//console.log('on - CONNECTIONSTATUS_REM ' + text);
+        var _cmd = CONNECTIONSTATUS_REM;
         var _payload = data;
         var dataOut = { cmd: _cmd, payload : _payload};
         //io.emit(CONNECTIONSTATUS_WEB, data);
@@ -180,20 +191,21 @@ io.sockets.on('connection', function(socket) {
     })
     */
 
-	socket.on(DNPKTSENTCFM_REM, function(data_is_id){	// Up
-		console.log('on - DNPKTSENTCFM_REM');
+	socket.on(DNPKTSENTCFM_REM, function(id){	// Up
+		//console.log('on - DNPKTSENTCFM_REM');
         var _cmd = DNPKTSENTCFM_REM;
-        var _payload = data_is_id;
+        var _payload = { id: id};
         var dataOut = { cmd: _cmd, payload : _payload};
 		//io.emit(DNPKTSENTCFM_WEB, data_is_id);
         crtc.sendData( dataOut );
     })
     
-	socket.on(UPPKT_REM, function(data){			// Up
-		console.log('on - UPPKT_REM');
-        var _cmd = UPPKT_WEB;
-        var _payload = data;
+	socket.on(UPPKT_REM, function(id_pkt){			// Up
+		//console.log('on - UPPKT_REM');
+        var _cmd = UPPKT_REM;
+        var _payload = id_pkt;
         var dataOut = { cmd: _cmd, payload : _payload};
+        //console.log('UPPKT_REM dataOut = ', dataOut)
 		//io.emit(UPPKT_WEB, data);
         crtc.sendData( dataOut );
 	})

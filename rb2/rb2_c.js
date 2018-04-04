@@ -15,7 +15,7 @@ var socket = require('socket.io-client')('http://localhost:8088');
 var plug_sio = null;
 */
 
-var csxx = require('./cxss');
+var csxx = require('./cxss'); 
 
 var Plug_Sio = require('./plug_sio');
 var plug_sio = new Plug_Sio();
