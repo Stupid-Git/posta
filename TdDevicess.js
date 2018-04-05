@@ -493,6 +493,11 @@ var dl = new DL();
 Pit_Load();
 
 
+callbackForConnected = function()
+{
+    console.log('callbackForConnected ')
+    dl.processCmd('proc_Start', { id: 'd81e6c802446' })
+}
 
 // Start in rolling
 //ortc.fakeOnicecandidate();
@@ -500,7 +505,7 @@ delay = 1;
 setTimeout(function(){
 
     //ortc.fakeOnicecandidate();
-    ortc.mqtt_makeOffer();
+    ortc.mqtt_makeOffer(callbackForConnected);
 
     delay = 4;
     setTimeout(function() {
@@ -511,7 +516,8 @@ setTimeout(function(){
         //dataOut = JSON.stringify( dataOut)
         ortc.sendData( dataOut );
         */
-        delay = 1;
+        delay = 10;
+        console.log('Waiting', delay, 'seconds')
         setTimeout(function() {
             /*
             var _cmd = SCANSTOP_REM;
@@ -521,7 +527,8 @@ setTimeout(function(){
             ortc.sendData( dataOut );            
             */
 
-            dl.processCmd('proc_Start', { id: 'd81e6c802446' })
+            console.log('Better be connected by now!!!!')
+            //dl.processCmd('proc_Start', { id: 'd81e6c802446' })
 
         }, delay*1000);
     

@@ -56,16 +56,29 @@ function Ortc( dummyParam )
           },
     };
     
-    var pcSettings = [
+    var OLDpcSettings = [
       {
-        iceServers: [{url:'stun:stun.l.google.com:19302'}]
-        //iceServers: [{url:'stun:ocn.cloudns.org:3478'}]
+        //iceServers: [{url:'stun:stun.l.google.com:19302'}]
+        iceServers: [{url:'stun:ocn.cloudns.org:3478'}]
       },
       {
         'optional': [{DtlsSrtpKeyAgreement: false}]
       }
     ];
-    
+    var pcSettings = { 
+        iceServers: [
+          {
+            urls : 'turn:ocn.cloudns.org:3478',
+            username:'karel',
+            credential:'abc123'
+            //urls: "stun:stun.services.mozilla.com",
+            //username: "louis@mozilla.com", 
+            //credential: "webrtcdemo"
+          }//,{
+          //  urls: 'stun:ocn.cloudns.org:3478'
+          //}
+        ]
+      };
     
     doHandleError = function(error) {
       throw error;
@@ -108,7 +121,7 @@ function Ortc( dummyParam )
         that.emit('gotData', data.message )
     };
 
-    this.makeDataChannel = function() {
+    this.makeDataChannel = function(callbackForConnected ) {
         // If you don't make a datachannel *before* making your offer (such
         // that it's included in the offer), then when you try to make one
         // afterwards it just stays in "connecting" state forever.  This is
@@ -119,6 +132,7 @@ function Ortc( dummyParam )
     
         this.channel.onopen = function() {
             console.log("\nConnected!");
+            callbackForConnected();
             //mqtt_client.end();
             //that.inputLoop(this.channel);
         };
@@ -144,11 +158,11 @@ function Ortc( dummyParam )
     }
     
     /* 3. From here on down deals with the --create case. */
-    this.mqtt_makeOffer = function() //public
+    this.mqtt_makeOffer = function( callbackForConnected ) //public
     {
         var that = this;
         pc = new webrtc.RTCPeerConnection(pcSettings);
-        this.makeDataChannel();
+        this.makeDataChannel(callbackForConnected);
         pc.onsignalingstatechange = this.onsignalingstatechange;
         pc.oniceconnectionstatechange = this.oniceconnectionstatechange;
         pc.onicegatheringstatechange = this.onicegatheringstatechange;

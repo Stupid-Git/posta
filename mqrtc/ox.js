@@ -36,14 +36,17 @@ ortc.on('gotData', (dataIn) => {
 
 });
 
-
+callbackForConnected = function()
+{
+    console.log('callbackForConnected ')
+}
 // Start in rolling
 //ortc.fakeOnicecandidate();
 delay = 1;
 setTimeout(function(){
 
     //ortc.fakeOnicecandidate();
-    ortc.mqtt_makeOffer();
+    ortc.mqtt_makeOffer(callbackForConnected);
 
     delay = 4;
     setTimeout(function(){

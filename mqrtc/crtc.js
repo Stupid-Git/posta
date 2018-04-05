@@ -48,16 +48,31 @@ function Crtc( dummyParam )
           },
     };
     
-    var pcSettings = [
-      {
-        iceServers: [{url:'stun:stun.l.google.com:19302'}]
-        //iceServers: [{url:'stun:ocn.cloudns.org:3478'}]
-      },
-      {
-        'optional': [{DtlsSrtpKeyAgreement: false}]
-      }
+    var OLDpcSettings = [
+        {
+          //iceServers: [{url:'stun:stun.l.google.com:19302'}]
+          iceServers: [{url:'stun:ocn.cloudns.org:3478'}]
+        },
+        {
+          'optional': [{DtlsSrtpKeyAgreement: false}]
+        }
     ];
-    
+
+    var pcSettings = { 
+        iceServers: [
+            {
+                urls : 'turn:ocn.cloudns.org:3478',
+                username:'karel',
+                credential:'abc123'
+                //urls: "stun:stun.services.mozilla.com",
+                //username: "louis@mozilla.com", 
+                //credential: "webrtcdemo"
+            }//,{
+            //  urls: 'stun:ocn.cloudns.org:3478'
+            //}
+        ]
+    };
+      
     
     doHandleError = function(error) {
         throw error;

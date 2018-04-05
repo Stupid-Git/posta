@@ -165,35 +165,43 @@ function tr4postit()
 {
     postPit_Load();
 
-var bodyXml = Make_it(it);
+    var bodyXml = Make_it(it);
 
-// Set the headers
-var headers = {
-    'User-Agent':       'ThermoStorage/1.01',
-    'Host':             'develop.webstorage.jp',
-    //'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    //'Connection: 'keep-alive',
-    'Content-Type':     'multipart/form-data; boundary=--boudary_tr4'
-    //'Content-Length': '1959'
-}
-
-// Set the options
-var options = {
-    url: 'http://develop.webstorage.jp/api/dev-tr4-1.php',
-    method: 'POST',
-    headers: headers,
-    body: bodyXml
-}
-
-//console.log('--------------------------------------------------');
-// Start the request
-request(options, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-        // Print out the response body
-        console.log(body)
+    // Set the headers
+    var headers = {
+        'User-Agent':       'ThermoStorage/1.01',
+        'Host':             'develop.webstorage.jp',
+        //'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        //'Connection: 'keep-alive',
+        'Content-Type':     'multipart/form-data; boundary=--boudary_tr4'
+        //'Content-Length': '1959'
     }
-})
-//console.log('--------------------------------------------------');
+
+    // Set the options
+    var options = {
+        url: 'http://develop.webstorage.jp/api/dev-tr4-1.php',
+        method: 'POST',
+        headers: headers,
+        body: bodyXml
+    }
+
+    //console.log('--------------------------------------------------');
+    // Start the request
+    request(options, function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+            // Print out the response body
+            console.log(body)
+            console.log('tr4post.js: tr4postit has run')
+            console.log('tr4post.js: fake force process.exit(0) here')
+            setTimeout(function() {
+                console.log('Shutting Down ...  Bye')
+                console.log('');
+                process.exit(0)
+            }, 2000);
+            
+        }
+    })
+    //console.log('--------------------------------------------------');
 
 }
 
