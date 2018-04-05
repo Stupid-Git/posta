@@ -110,7 +110,7 @@ function Crtc( dummyParam )
     var Goffer = null;
     
     /* 2. This code deals with the --join case. */
-    this.setOffer = function(pastedOffer) { //mqtt_getOffer
+    this.setOffer = function(pastedOffer, callbackForConnected) { //mqtt_getOffer
         data = pastedOffer; //JSON.parse(pastedOffer);
         Goffer = new webrtc.RTCSessionDescription(data);
         Ganswer = null;
@@ -129,7 +129,7 @@ function Crtc( dummyParam )
             mqtt_doShowAnswer();
           }
         }
-        this.doHandleDataChannels();
+        this.doHandleDataChannels(callbackForConnected);
     }    
     mqtt_doShowAnswer = function() {
         Ganswer = pc.localDescription;
@@ -156,7 +156,7 @@ function Crtc( dummyParam )
         that.emit('gotData', data.message )
     };
     
-    this.doHandleDataChannels = function() {
+    this.doHandleDataChannels = function(callbackForConnected) {
         var that = this;
         var labels = Object.keys(dataChannelSettings);
         
@@ -172,9 +172,8 @@ function Crtc( dummyParam )
             if(Object.keys(that.dataChannels).length === labels.length) {
               //mqtt_client.end();
               console.log("\nConnected!");
-              console.log("\nConnected!");
+              callbackForConnected()
               //that.inputLoop(channel);
-              console.log("Connected!");
 
             }
           };

@@ -32,10 +32,14 @@ var Crtc = require('../mqrtc/crtc');
 var cm = new Cm(mqttParam_1);
 var crtc = new Crtc('dummyParam');
 
+callbackForConnected = function()
+{
+    console.log('callbackForConnected ')
+}
 
 cm.on('gotOffer', (offer) => {
-console.log('[C ] got offer  from   cm = ')//, offer )
-crtc.setOffer( offer );
+    console.log('[C ] got offer  from   cm = ')//, offer )
+    crtc.setOffer( offer, callbackForConnected );
 });
 
 crtc.on('gotAnswer', (answer) => {

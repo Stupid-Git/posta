@@ -18,7 +18,7 @@ function Ortc( dummyParam )
 
     var that = this;
 
-    //function setOffer( offer ) { // NOT PUBLIC
+    //function setOffer( offer, callbackForConnected ) { // NOT PUBLIC
     this.setAnswer = function( answer ) {
         console.log('[Ortc] got Answer.length =', answer.length );
         getAnswer( answer )
