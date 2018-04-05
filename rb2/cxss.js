@@ -43,8 +43,8 @@ cm.on('gotOffer', (offer) => {
 });
 
 crtc.on('gotAnswer', (answer) => {
-console.log('[C ] got answer from crtc = ')//, answer )
-cm.sendAnswer( answer );
+    console.log('[C ] got answer from crtc = ')//, answer )
+    cm.sendAnswer( answer );
 });
 
 // that.emit('gotData', data.message )

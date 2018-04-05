@@ -12,46 +12,51 @@ var TdTR4 = require ('../ble-adapter').TdTR4;
 
 /*
 var socket = require('socket.io-client')('http://localhost:8088');
-var plug_sio = null;
+var plug_it = null;
 */
 
+/*
 var csxx = require('./cxss'); 
-
 var Plug_Sio = require('./plug_sio');
-var plug_sio = new Plug_Sio();
+var plug_it = new Plug_Sio();
+*/
+
+var Plug_Rtc = require('./plug_rtc');
+var plug_it = new Plug_Rtc();
+
 
 plug_sio_setup();
 
 function plug_sio_setup()
 {
     console.log('plug_sio_setup')
-    plug_sio.do_startScanning = do_startScanning;
-    plug_sio.do_stopScanning = do_stopScanning;
+    plug_it.do_startScanning = do_startScanning;
+    plug_it.do_stopScanning = do_stopScanning;
 
-    noble.on('scanStart', plug_sio.on_scanStart_callback.bind(plug_sio));
-    noble.on('scanStop', plug_sio.on_scanStop_callback.bind(plug_sio));
-    noble.on('discover', plug_sio.on_discover_callback.bind(plug_sio));  
+    noble.on('scanStart', plug_it.on_scanStart_callback.bind(plug_it));
+    noble.on('scanStop', plug_it.on_scanStop_callback.bind(plug_it));
+    noble.on('discover', plug_it.on_discover_callback.bind(plug_it));  
 
 
-    plug_sio.do_connect = do_connect;       // ( id )
-    plug_sio.do_disconnect = do_disconnect; // ( id )
-    plug_sio.do_DNPKT_REM = do_DNPKT_REM;   // ( id_pkt )
+    plug_it.do_connect = do_connect;       // ( id )
+    plug_it.do_disconnect = do_disconnect; // ( id )
+    plug_it.do_DNPKT_REM = do_DNPKT_REM;   // ( id_pkt )
 }
 
 function plug_sio_unSetup()
 {
     console.log('plug_sio_unSetup')
-    plug_sio.do_startScanning = null; //do_startScanning;
-    plug_sio.do_stopScanning = null; //do_stopScanning;
+    plug_it.do_startScanning = null; //do_startScanning;
+    plug_it.do_stopScanning = null; //do_stopScanning;
 
-    noble.removeListener('scanStart', plug_sio.on_scanStart_callback.bind(plug_sio));
-    noble.removeListener('scanStop', plug_sio.on_scanStop_callback.bind(plug_sio));
-    noble.removeListener('discover', plug_sio.on_discover_callback.bind(plug_sio));  
+    noble.removeListener('scanStart', plug_it.on_scanStart_callback.bind(plug_it));
+    noble.removeListener('scanStop', plug_it.on_scanStop_callback.bind(plug_it));
+    noble.removeListener('discover', plug_it.on_discover_callback.bind(plug_it));  
 
 
-    plug_sio.do_connect = null; //do_connect;       // ( id )
-    plug_sio.do_disconnect = null; //do_disconnect; // ( id )
-    plug_sio.do_DNPKT_REM = null; //do_DNPKT_REM;   // ( id_pkt )
+    plug_it.do_connect = null; //do_connect;       // ( id )
+    plug_it.do_disconnect = null; //do_disconnect; // ( id )
+    plug_it.do_DNPKT_REM = null; //do_DNPKT_REM;   // ( id_pkt )
 }
 
 
@@ -84,19 +89,19 @@ function do_DNPKT_REM(id_pkt) {
 // UP UP UP UP UP UP UP UP UP UP UP UP UP UP UP UP UP UP UP UP UP UP
 G_OnTR4_upPacket = function( status, id_pkt ) {    
     console.log('OnTR4_upPacket (id = ' + id_pkt.id + ') pkt.len = ' + id_pkt.pkt.length);
-    plug_sio.on_UPPKT_callback( id_pkt );
+    plug_it.on_UPPKT_callback( id_pkt );
 }
 
 G_OnTR4_Connected = function( id ) {
     var id_status = { id : id, status : true };
     console.log("OnTR4_Connected: id_status =", id_status);
-    plug_sio.up_connectionStatus(id_status);
+    plug_it.up_connectionStatus(id_status);
 }
 
 G_OnTR4_Disconnected = function( id ) {
     var id_status = { id : id, status : false };
     console.log("OnTR4_Disconnected: id_status =", id_status);
-    plug_sio.up_connectionStatus(id_status);
+    plug_it.up_connectionStatus(id_status);
     devArray[this.id] = null; //{}
 }
 
@@ -168,7 +173,7 @@ RB.prototype.processCmd = function( procId, data )
 
     switch(procId){
         case 'proc_Start':
-        if(plug_sio == null) {
+        if(plug_it == null) {
             //OLD attach_scanRelated();
             //OLD attach_connectRelated();
         }
