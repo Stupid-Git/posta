@@ -15,14 +15,48 @@ var socket = require('socket.io-client')('http://localhost:8088');
 var plug_it = null;
 */
 
+// IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT
+// IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT
 /*
 var csxx = require('./cxss'); 
 var Plug_Sio = require('./plug_sio');
 var plug_it = new Plug_Sio();
 */
 
+
+// IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT
+// IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT
+var mqttParam_1 = { mqttServer : 'mqtt://ocn.cloudns.org',
+topic_sendAnswer: 'sendAnswer',
+topic_makeOffer:  'makeOffer'
+};
+
+var Cm = require('../mqrtc/cm');
+var Crtc = require('../mqrtc/crtc');
+
+var cm = new Cm(mqttParam_1);
+var crtc = new Crtc('dummyParam');
+
+callbackForConnected = function()
+{
+    console.log('callbackForConnected ')
+}
+
+cm.on('gotOffer', (offer) => {
+    console.log('[C ] got offer  from   cm = ')//, offer )
+    crtc.setOffer( offer, callbackForConnected );
+});
+
+crtc.on('gotAnswer', (answer) => {
+    console.log('[C ] got answer from crtc = ')//, answer )
+    cm.sendAnswer( answer );
+});
+
+
 var Plug_Rtc = require('./plug_rtc');
-var plug_it = new Plug_Rtc();
+var plug_it = new Plug_Rtc(crtc);
+
+// IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT
 
 
 plug_sio_setup();

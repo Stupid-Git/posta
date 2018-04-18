@@ -18,18 +18,8 @@ function plug_sio()
   
     this.attach_connectRelated();
 }
-/*
-const SCANSTART_WEB        = 'scanStart:web';         // Down
-const SCANSTOP_WEB         = 'scanStop:web';          // Down
-const SCANDATA_WEB         = 'scanData:web';          // Up
-const SCANSTARTED_WEB      = 'scanStarted:web';       // Up
-const SCANSTOPPED_WEB      = 'scanStopped:web';       // Up
-*/
-const SCANSTART_REM        = 'scanStart:rem';         // Down
-const SCANSTOP_REM         = 'scanStop:rem';          // Down
-const SCANDATA_REM         = 'scanData:rem';          // Up
-const SCANSTARTED_REM      = 'scanStarted:rem';       // Up
-const SCANSTOPPED_REM      = 'scanStopped:rem';       // Up
+
+require('./rb2_util'); // const SCANSTART_REM  etc 
 
 
 plug_sio.prototype.on_scanStart_callback = function()

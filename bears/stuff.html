@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+var paramX = "HHH";
+</script>
+
+<div id="GGG">
+WTF
+</div>
+
+<div id="HHH" onmouseover="mOver(paramX)" onmouseout="mOut(this.id)" 
+style="background-color:#D94A38;width:120px;height:20px;padding:40px;">
+Mouse Over Me</div>
+
+<script>
+function mOver(obj) {
+    document.getElementById(obj).innerHTML = "hgjhgj";
+    //obj.innerHTML = "<< Thank You"
+    //obj.style="background-color:#49fA38;width:140px;height:20px;padding:40px;"
+}
+
+function mOut(obj) {
+    document.getElementById(obj).innerHTML = "h45345";
+    //obj.innerHTML = ">> Mouse Over Me"
+    //obj.style="background-color:#F94A38;width:120px;height:20px;padding:40px;"
+
+    document.getElementById("GGG").innerHTML = "==WTF==";
+}
+document.getElementById("GGG").innerHTML = "--WTF--";
+document.getElementById("HHH").innerHTML = "--HHH--";
+</script>
+
+</body>
+</html> 

@@ -120,18 +120,7 @@ io.sockets.on('connection', function(socket) {
     //====================================================================
     // SCAN BLUETOOTH LE
     //====================================================================
-    var SCANSTART_WEB        = 'scanStart:web';         // Down
-    var SCANSTOP_WEB         = 'scanStop:web';          // Down
-    var SCANDATA_WEB         = 'scanData:web';          // Up
-    var SCANSTARTED_WEB      = 'scanStarted:web';       // Up
-    var SCANSTOPPED_WEB      = 'scanStopped:web';       // Up
-
-    var SCANSTART_REM        = 'scanStart:rem';         // Down
-    var SCANSTOP_REM         = 'scanStop:rem';          // Down
-    var SCANDATA_REM         = 'scanData:rem';          // Up
-    var SCANSTARTED_REM      = 'scanStarted:rem';       // Up
-    var SCANSTOPPED_REM      = 'scanStopped:rem';       // Up
-
+    require('./rb2_util'); // const SCANSTART_REM  etc 
 
     // message passing ----------------------------------------------------
     /*

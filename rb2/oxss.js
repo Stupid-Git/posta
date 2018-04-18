@@ -23,19 +23,10 @@ om.on('gotAnswer', (answer) => {
 
 
 //====================================================================
-    // SCAN BLUETOOTH LE
-    //====================================================================
-    var SCANSTART_WEB        = 'scanStart:web';         // Down
-    var SCANSTOP_WEB         = 'scanStop:web';          // Down
-    var SCANDATA_WEB         = 'scanData:web';          // Up
-    var SCANSTARTED_WEB      = 'scanStarted:web';       // Up
-    var SCANSTOPPED_WEB      = 'scanStopped:web';       // Up
+// SCAN BLUETOOTH LE
+//====================================================================
+require('./rb2_util'); // const SCANSTART_REM  etc 
 
-    var SCANSTART_REM        = 'scanStart:rem';         // Down
-    var SCANSTOP_REM         = 'scanStop:rem';          // Down
-    var SCANDATA_REM         = 'scanData:rem';          // Up
-    var SCANSTARTED_REM      = 'scanStarted:rem';       // Up
-    var SCANSTOPPED_REM      = 'scanStopped:rem';       // Up
 
 var o_i = 10;
 var o_text =  'Hello';

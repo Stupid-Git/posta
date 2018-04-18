@@ -1,6 +1,6 @@
 
 
-const rb2_tags = {
+rb2_tags = {
     RB2_STARTSCAN_R : 'rb2StartScan_Rem',       // DN - 
     RB2_STOPSCAN_R : 'rb2StopScan_Rem',         // DN - 
     RB2_ADVDATA_R : 'rb2AdvData_Rem',           // UP - 
@@ -14,14 +14,29 @@ const rb2_tags = {
     RB2_UDRECV_R : 'rb2UDRecv_Rem',             // UP - 
 }
 
-const SCANSTART_WEB        = 'scanStart:web';         // Down
-const SCANSTOP_WEB         = 'scanStop:web';          // Down
-const SCANDATA_WEB         = 'scanData:web';          // Up
-const SCANSTARTED_WEB      = 'scanStarted:web';       // Up
-const SCANSTOPPED_WEB      = 'scanStopped:web';       // Up
+//=============================================================================
+SCANSTART_WEB        = 'scanStart:web';         // Down
+SCANSTOP_WEB         = 'scanStop:web';          // Down
+SCANDATA_WEB         = 'scanData:web';          // Up
+SCANSTARTED_WEB      = 'scanStarted:web';       // Up
+SCANSTOPPED_WEB      = 'scanStopped:web';       // Up
 
-const SCANSTART_REM        = 'scanStart:rem';         // Down
-const SCANSTOP_REM         = 'scanStop:rem';          // Down
-const SCANDATA_REM         = 'scanData:rem';          // Up
-const SCANSTARTED_REM      = 'scanStarted:rem';       // Up
-const SCANSTOPPED_REM      = 'scanStopped:rem';       // Up
+//=============================================================================
+SCANSTART_REM        = 'scanStart:rem';         // Down
+SCANSTOP_REM         = 'scanStop:rem';          // Down
+SCANDATA_REM         = 'scanData:rem';          // Up
+SCANSTARTED_REM      = 'scanStarted:rem';       // Up
+SCANSTOPPED_REM      = 'scanStopped:rem';       // Up
+
+//=============================================================================
+CONNECT_REM          = 'connect:rem';           // Down
+DISCONNECT_REM       = 'disconnect:rem';        // Down
+DISCONNECTED_DEV     = 'disconnected:dev';      // Up (from noble ...)
+CONNECTIONSTATUS_REM = 'connectionStatus:rem';  // Up
+
+//=============================================================================
+DNPKT_REM            = 'dnPkt:rem';             // Down
+DNPKTSENTCFM_REM     = 'dnPktSentCfm:rem';      // Up
+UPPKTRDY_DEV         = 'upPktRdy:dev';          // Up (from noble ...)
+UPPKT_REM            = 'upPkt:rem';             // Up
+

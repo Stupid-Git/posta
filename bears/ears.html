@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+    	
+<script src="./dist/ear.js"></script>
+
+<script>
+var paramX = "HHH";
+</script>
+
+<div id="GGG">
+WTF
+</div>
+
+<div id="HHH" 
+    onmouseover="mOver(paramX)" onmouseout="mOut(this.id)" 
+    onmousedown="mDown(this)" onmouseup="mUp(this)"
+
+    style="background-color:#D94A38;width:120px;height:20px;padding:40px;">
+    Mouse Over Me</div>
+
+<script>
+function mDown(obj) {
+    obj.style.backgroundColor = "#1ec5e5";
+    obj.innerHTML = "Release Me";
+}
+
+function mUp(obj) {
+    obj.style.backgroundColor="#D94A38";
+    obj.innerHTML="Thank You";
+}
+
+function mOver(obj) {
+    document.getElementById(obj).innerHTML = "hgjhgj";
+    //obj.innerHTML = "<< Thank You"
+    //obj.style="background-color:#49fA38;width:140px;height:20px;padding:40px;"
+}
+
+function mOut(obj) {
+    document.getElementById(obj).innerHTML = "h45345";
+    //obj.innerHTML = ">> Mouse Over Me"
+    //obj.style="background-color:#F94A38;width:120px;height:20px;padding:40px;"
+
+    document.getElementById("GGG").innerHTML = "==WTF==";
+}
+document.getElementById("GGG").innerHTML = "--WTF--";
+document.getElementById("HHH").innerHTML = "--HHH--";
+
+//header("Access-Control-Allow-Origin: *");
+console.log('HostAndPort = ', HostAndPort)
+HostAndPort = 'http://10.2.254.16:8080';
+console.log('HostAndPort = ', HostAndPort)
+</script>
+
+<h2>The method Attribute</h2>
+<p>This form will be submitted using the GET method:</p>
+
+<form action="http://10.2.254.16:8080/api/bears" target="_blank" method="GET">
+  <input type="submit" value="Submit">
+</form>
+
+<p>After you submit, notice that the form values is visible in the address bar of the new browser tab.</p>
+
+<script>
+HelloWorld();
+GET_print();
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+    $("button").click(function(){
+        /*
+        $.get("http://10.2.254.16:8080/api/bears", function(data, status){
+            alert("Data: " + data + "\nStatus: " + status);
+        });
+        */
+        var myData = {};
+        $.ajax({
+            url: 'http://10.2.254.16:8080/api/bears',
+           //data: myData,
+            type: 'GET',
+            //crossDomain: true,
+            datatype: 'jsonp',
+            //callback: '?',
+            //datatype: 'application/json',
+            beforeSend: function (xhr) {
+                //REM xhr.setRequestHeader('Access-Control-Allow-Origin', 'false')
+            },
+            success: function() { alert("Success"); },
+            error: function(jqXHR) {
+                    console.log("ajax error " + jqXHR.status);
+                    alert('Failed!');
+                }
+
+        });
+    });
+});
+</script>
+
+<button id="button">Send an HTTP GET request to a page and get the result back</button>
+
+
+</body>
+</html> 

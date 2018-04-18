@@ -1,57 +1,13 @@
-/*
-    var CONNECT_REM          = 'connect:rem';           // Down
-    var DISCONNECT_REM       = 'disconnect:rem';        // Down
-    var CONNECTIONSTATUS_REM = 'connectionStatus:rem';  // Up
-
-    var CONNECT_WEB          = 'connect:web';           // Down
-    var DISCONNECT_WEB       = 'disconnect:web';        // Down
-    var CONNECTIONSTATUS_WEB = 'connectionStatus:web';  // Up
 
 
-    var DNPKT_REM            = 'dnPkt:rem';             // Down
-    var DNPKTSENTCFM_REM     = 'dnPktSentCfm:rem';      // Up
-    var UPPKTRDY_DEV         = 'upPktRdy:dev';          // Up (from noble ...)
-    var UPPKT_REM            = 'upPkt:rem';             // Up
-
-    var DNPKT_WEB            = 'dnPkt:web';             // Down
-    var DNPKTSENTCFM_WEB     = 'dnPktSentCfm:web';      // Up
-    var UPPKT_WEB            = 'upPkt:web';             // Up
-*/
-
-var mqttParam_1 = { mqttServer : 'mqtt://ocn.cloudns.org',
-topic_sendAnswer: 'sendAnswer',
-topic_makeOffer:  'makeOffer'
-};
-
-// CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-// CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-// CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-var Cm = require('../mqrtc/cm');
-var Crtc = require('../mqrtc/crtc');
-
-var cm = new Cm(mqttParam_1);
-var crtc = new Crtc('dummyParam');
-
-callbackForConnected = function()
-{
-    console.log('callbackForConnected ')
-}
-
-cm.on('gotOffer', (offer) => {
-    console.log('[C ] got offer  from   cm = ')//, offer )
-    crtc.setOffer( offer, callbackForConnected );
-});
-
-crtc.on('gotAnswer', (answer) => {
-    console.log('[C ] got answer from crtc = ')//, answer )
-    cm.sendAnswer( answer );
-});
+require('./rb2_util'); // const SCANSTART_REM  etc 
 
 
-
-function plug_rtc()
+function plug_rtc( crtc )
 {
     console.log('plug_rtc: construct');
+    
+    this.crtc = crtc;
 
     //this.socket = require('socket.io-client')('http://localhost:8088');
 
@@ -66,22 +22,17 @@ function plug_rtc()
     this.do_DNPKT_REM = null;
   //this.up_pkt( id_pkt )
   
-  this.attach_connectRelated();
+    this.attach_connectRelated();
 
-  this.attach_rtc();
+    this.attach_rtc();
 }
 
-const SCANSTART_REM        = 'scanStart:rem';         // Down
-const SCANSTOP_REM         = 'scanStop:rem';          // Down
-const SCANDATA_REM         = 'scanData:rem';          // Up
-const SCANSTARTED_REM      = 'scanStarted:rem';       // Up
-const SCANSTOPPED_REM      = 'scanStopped:rem';       // Up
 
 
 plug_rtc.prototype.on_scanStart_callback = function()
 {
-  console.log('on_scanStart_callback');
-  //this.socket.emit(SCANSTARTED_REM, 'Enter Data..'); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    console.log('on_scanStart_callback');
+    //this.socket.emit(SCANSTARTED_REM, 'Enter Data..'); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 }
 
 plug_rtc.prototype.on_scanStop_callback = function()
@@ -92,12 +43,12 @@ plug_rtc.prototype.on_scanStop_callback = function()
     var _cmd = SCANSTOPPED_REM;
     var _payload = data;
     var dataOut = { cmd: _cmd, payload : _payload};
-    crtc.sendData( dataOut );
+    this.crtc.sendData( dataOut );
 }
 
 plug_rtc.prototype.on_discover_callback = function(peripheral)
 {
-  console.log('on_discover_callback uuid = ' + peripheral.uuid);
+    console.log('on_discover_callback uuid = ' + peripheral.uuid);
 
     if (peripheral.advertisement.manufacturerData) {
         var md = peripheral.advertisement.manufacturerData;
@@ -109,7 +60,7 @@ plug_rtc.prototype.on_discover_callback = function(peripheral)
             var _cmd = SCANDATA_REM;
             var _payload = data;
             var dataOut = { cmd: _cmd, payload : JSON.parse(_payload) };
-            crtc.sendData( dataOut );
+            this.crtc.sendData( dataOut );
         }
     }
 }
@@ -141,19 +92,6 @@ plug_rtc.prototype.detach_scanRelated = function() {
     //noble.removeListener('discover', on_discover_callback);    
 }
 
-  
-var CONNECT_REM          = 'connect:rem';           // Down
-var DISCONNECT_REM       = 'disconnect:rem';        // Down
-
-var DISCONNECTED_DEV     = 'disconnected:dev';      // Up (from noble ...)
-var CONNECTIONSTATUS_REM = 'connectionStatus:rem';  // Up
-
-
-
-var DNPKT_REM            = 'dnPkt:rem';             // Down
-var DNPKTSENTCFM_REM     = 'dnPktSentCfm:rem';      // Up
-//var UPPKTRDY_DEV         = 'upPktRdy:dev';          // Up (from noble ...)
-var UPPKT_REM            = 'upPkt:rem';             // Up
 
 plug_rtc.prototype._go_do_connect = function( payload ) {
     var id = payload.id;
@@ -174,7 +112,7 @@ plug_rtc.prototype.up_connectionStatus = function( id_status ) {
     var _cmd = CONNECTIONSTATUS_REM;
     var _payload = id_status;
     var dataOut = { cmd: _cmd, payload : _payload};
-    crtc.sendData( dataOut );
+    this.crtc.sendData( dataOut );
 }
 
 
@@ -190,7 +128,7 @@ plug_rtc.prototype._go_do_DNPKT_REM = function( id_pkt ) {
         var _cmd = DNPKTSENTCFM_REM;
         var _payload = { id: id_pkt.id};
         var dataOut = { cmd: _cmd, payload : _payload};
-        crtc.sendData( dataOut );
+        this.crtc.sendData( dataOut );
     }
 }
 
@@ -203,7 +141,7 @@ plug_rtc.prototype.on_UPPKT_callback = function( id_pkt ) {
     var _payload = id_pkt;
     var dataOut = { cmd: _cmd, payload : _payload};
     //console.log('UPPKT_REM dataOut = ', dataOut)
-    crtc.sendData( dataOut );
+    this.crtc.sendData( dataOut );
 }
 
 
@@ -255,7 +193,7 @@ plug_rtc.prototype._go_do_rtcDataIn = function( dataIn ) {
 plug_rtc.prototype.attach_rtc = function() {
 
     // that.emit('gotData', data.message )
-    crtc.on('gotData', this._go_do_rtcDataIn.bind(this) );
+    this.crtc.on('gotData', this._go_do_rtcDataIn.bind(this) );
 }
 
 
