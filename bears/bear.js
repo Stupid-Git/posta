@@ -83,18 +83,89 @@ var Bear = class {
         console.log('Hello World. I am Bear with id =', this.myId);
     }
 
-    GET_print() {
-        console.log('this.myId = ', this.myId);       
-        // direct way
+    getPrint() {
         request.get(HostAndPort + '/api/bears/'+this.myId, function (err, httpResponse, body) {
+
+            var data = JSON.parse(body);
+            console.log('request.get   data =', data);
+            console.log('--------------------------------------------------------------------------------');
+        });
+    }
+
+    getAllPrint() {
+        request.get(HostAndPort + '/api/bears/', function (err, httpResponse, body) {
             console.log('request.get   err =',err);
             console.log('request.get   body =', body);
 
-            var jbody = JSON.parse(body);
-            console.log('request.get   body._id =', jbody._id);
-            console.log('request.get   body.name =', jbody.name);
+            var data = JSON.parse(body);
+            data.forEach( function(element) {
+                console.log('--------------------------------------------------------------------------------');
+                console.log(element);
+            });
             console.log('--------------------------------------------------------------------------------');
+                        
+            //console.log('request.get   body._id =', data._id);
+            //console.log('request.get   body.name =', data.name);
+            //console.log('--------------------------------------------------------------------------------');
         });
+    }
+
+    loadFullData( cb ) {
+        request.get(HostAndPort + '/api/bears/'+this.myId, function (err, httpResponse, body) {
+            if( err )
+                cb( err);
+
+            var data = JSON.parse(body);
+            //console.log('request.get   body._id =', data._id);
+            //console.log('--------------------------------------------------------------------------------');
+            cb( err, data ); // note: err == null at this point
+        });
+    }
+
+    getOffer( cb ) {
+        request.get(HostAndPort + '/api/bears/'+this.myId, function (err, httpResponse, body) {
+            if( err )
+                cb( err);
+
+            var data = JSON.parse(body);
+            var offer = data.offer;
+            //console.log('request.get   body._id =', data._id);
+            //console.log('--------------------------------------------------------------------------------');
+            cb( err, offer ); // note: err == null at this point
+        });
+    }
+    
+    setOffer(tdid, offer, cb) {
+        //console.log('this.myId = ', this.myId);       
+        // direct way
+        request.get(HostAndPort + '/api/bears/'+this.myId, function (err, httpResponse, body) {
+            //console.log('request.get err =',err);
+            //console.log('request.get body =', body);
+            var data = JSON.parse(body);
+            //console.log('request.get body._id =', data._id);
+            var _id = data._id;
+            if( _id == null)
+                cb('Error: ID not found') //return;
+
+            request.put(HostAndPort + '/api/bears/'+_id, {
+                form: {
+                    tdid : tdid,
+                    offer : offer
+                }
+                }, function (err, httpResponse, body) {
+                    
+                    if(err)
+                        cb(err)
+
+                    cb( null, 'OK');
+                    //console.log('=====================================================================');
+                    //console.log('request.put err =', err);
+                    //console.log('=====================================================================');
+                    //console.log('request.put body =', body);
+                    //console.log('=====================================================================');
+            });                      
+        });
+
     }
 
     make_me() {
@@ -106,13 +177,13 @@ var Bear = class {
             }
         }, function (err, httpResponse, body) {
             
-            console.log('=====================================================================');
-            console.log( err );
             //console.log('=====================================================================');
-            //console.log( httpResponse );
-            console.log('=====================================================================');
-            console.log( body); // == {"message":"Bear created!"}
-            console.log('=====================================================================');
+            //console.log( err );
+            ////console.log('=====================================================================');
+            ////console.log( httpResponse );
+            //console.log('=====================================================================');
+            //console.log( body); // == {"message":"Bear created!"}
+            //console.log('=====================================================================');
         
             // direct way
             request.get(HostAndPort + '/api/bears', function (err, httpResponse, body) {
@@ -129,17 +200,17 @@ var Bear = class {
     }
 
     check_me() {
-        console.log('this.myId = ', this.myId);   
+        //console.log('this.myId = ', this.myId);   
         var that = this;
         request.get(HostAndPort + '/api/bears/'+this.myId, function (err, httpResponse, body) {
-            console.log('request.get   err =',err);
-            console.log('request.get   body =', body);
+            //console.log('request.get   err =',err);
+            //console.log('request.get   body =', body);
 
             var data = JSON.parse(body);
 
-            //var jbody = JSON.parse(body);
-            //console.log('request.get   body._id =', jbody._id);
-            //console.log('request.get   body.name =', jbody.name);
+            //var data = JSON.parse(body);
+            //console.log('request.get   body._id =', data._id);
+            //console.log('request.get   body.name =', data.name);
             if(data.message) {
                 if(data.message == 'Bear not found!') {
                     that.make_me();
@@ -149,7 +220,7 @@ var Bear = class {
             } else {
                 console.log('No message')
             }
-            console.log('--------------------------------------------------------------------------------');
+            //console.log('--------------------------------------------------------------------------------');
         });
 
         // direct way
@@ -168,17 +239,17 @@ var Bear = class {
     }
 
 
-    check_me2(tdid, offer) {
-        console.log('this.myId = ', this.myId);       
+    check_me2(tdid, offer, cb) {
+        //console.log('this.myId = ', this.myId);       
         // direct way
         request.get(HostAndPort + '/api/bears/'+this.myId, function (err, httpResponse, body) {
-            console.log('request.get err =',err);
-            console.log('request.get body =', body);
-            var jbody = JSON.parse(body);
-            console.log('request.get body._id =', jbody._id);
-            var _id = jbody._id;
+            //console.log('request.get err =',err);
+            //console.log('request.get body =', body);
+            var data = JSON.parse(body);
+            //console.log('request.get body._id =', data._id);
+            var _id = data._id;
             if( _id == null)
-                return;
+                cb('Error: ID not found') //return;
 
             request.put(HostAndPort + '/api/bears/'+_id, {
                 form: {
@@ -187,11 +258,15 @@ var Bear = class {
                 }
                 }, function (err, httpResponse, body) {
                     
-                    console.log('=====================================================================');
-                    console.log('request.put err =', err);
-                    console.log('=====================================================================');
-                    console.log('request.put body =', body);
-                    console.log('=====================================================================');
+                    if(err)
+                        cb(err)
+
+                    cb( null, 'OK');
+                    //console.log('=====================================================================');
+                    //console.log('request.put err =', err);
+                    //console.log('=====================================================================');
+                    //console.log('request.put body =', body);
+                    //console.log('=====================================================================');
             });                      
         });
 
@@ -202,8 +277,8 @@ var Bear = class {
         //check_me();
         //var offer = JSON.stringify({ quote: 'No one fucks with the Jesus!'});
         var offer = { quote: 'No one fucks with The Jesus 1', mqttofferin : '/de543deac2398cb8def/offerin'};
-        //this.check_me2( '112233445566', offer  );
-        this.check_me2( null, offer  );
+        //this.check_me2( '112233445566', offer, (err, data) => {}   );
+        this.check_me2( null, offer, (err, data) => {} );
     }
     jesus_2()
     {
@@ -214,8 +289,20 @@ var Bear = class {
             mqttofferin : '/de543deac2398cb8def/offerin',
             mqttanswerout : '/de543deac2398cb8def/answerout',
         };
-        //this.check_me2( '112233445566', offer  );
-        this.check_me2( null, offer  );
+        //this.check_me2( '112233445566', offer , (err, data) => {}  );
+        this.check_me2( null, offer, (err, data) => {}   );
+    }
+    jesus_n(n, cb)
+    {
+        //check_me();
+        //var offer = JSON.stringify({ quote: 'No one fucks with the Jesus!'});
+        var offer = { 
+            quote: 'No one fucks with The Jesus ' + n.toString(), 
+            mqttofferin : '/de543deac2398cb8def/offerin',
+            mqttanswerout : '/de543deac2398cb8def/answerout',
+        };
+        //this.check_me2( '112233445566', offer, (err, data) => {}   );
+        this.check_me2( null, offer, (err, data) => { cb(err,data)}   );
     }
 
 

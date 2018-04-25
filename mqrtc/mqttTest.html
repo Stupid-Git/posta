@@ -10,6 +10,82 @@
 <body>
 
 <h4>Connect to TR4 Device</h4>
+<a id="myUserNameLabel">User Name : </a>
+<input id="myUserName" rows=10 cols=200>
+<button id="getMyBearBtn">Load myBear Number</button>
+<br>
+
+<a> Bear Id : </a>
+<input id="myBearId" rows=10 cols=200>
+<button id="getMyMqttBtn">Load Mqtt Paths</button>
+<br>
+<a> mqttOffer  path : </a>
+<input id="myOfferPath" rows=10 cols=200>
+<br>
+<a> mqttAnswer path : </a>
+<input id="myAnswerPath" rows=10 cols=200>
+<hr>
+<script>
+
+    // Init
+    myUserName.value = 'karel';
+
+    getMyBearBtn.onclick = function () {
+        console.log('getMyBearBtn.click');
+        myBearId.value = 'Please wait. Computing...';
+        var _userName = myUserName.value;
+
+        $.ajax({
+            url: 'http://10.2.254.16:8080/api/uzas/' + _userName,
+            type: 'GET',
+            datatype: 'jsonp',
+
+            error: function(jqXHR) {
+                console.log("ajax error " + jqXHR.status);
+                alert('Failed!');
+            },
+
+            success: function(data) {         
+                console.log("data " + data);
+                var bears = data.bears;
+                var bearId = bears[0]; // default to first bear in the list
+                //document.getElementById("myBearId").innerHTML = bearId;
+                myBearId.value = bearId;
+            }
+        });
+    };
+
+    getMyMqttBtn.onclick = function () {
+        console.log('getMyMqttBtn.click');
+        myOfferPath.value = 'Please wait. Computing...';
+        myAnswerPath.value = 'Please wait. Computing...';
+
+        $.ajax({
+            url: 'http://10.2.254.16:8080/api/bears/' + myBearId.value,
+            type: 'GET',
+            datatype: 'jsonp',
+
+            error: function(jqXHR) {
+                console.log("ajax error " + jqXHR.status);
+                alert('Failed!');
+            },
+
+            success: function(data) {
+                console.log("data " + data);
+                var offer = data.offer;
+                myOfferPath.value = offer.mqttofferin;
+                myAnswerPath.value = offer.mqttanswerout;
+                //var offer = { 
+                //    quote: 'No one fucks with The Jesus 2', 
+                //    mqttofferin : '/de543deac2398cb8def/offerin',
+                //    mqttanswerout : '/de543deac2398cb8def/answerout',
+                //};
+            }
+        });
+    }
+</script>
+
+
 <button id="createRTCDataChannelBtn">Create RTCDataChannel, send offer to remote over mqtt</button>
 <hr>
 <a id="myModalLabel">Your RTC offer to remote : </a>
@@ -74,119 +150,8 @@ var mqttParam_1 = {
     topic_makeOffer:  'makeOffer'
 };
 
-/*
-var client = mqtt.connect(mqttParam_1.mqttServer)
-  
-client.subscribe("mqtt/demo")
+var mqtt_client;
 
-client.on("message", function (topic, payload) {
-    alert([topic, payload].join(": "))
-    client.end()
-})
-client.publish("mqtt/demo", "hello world!")
-*/
-
-var mqtt_client = mqtt.connect( mqttParam_1.mqttServer )
-//var that = this;
-mqtt_client.subscribe(mqttParam_1.topic_sendAnswer, (err, granted) => {
-    if(err)
-        console.log('mqtt_client.subscribe(sendAnswer) FAILED')
-    else {
-        console.log('mqtt_client.subscribe(sendAnswer) OK')
-        //that.ready = true;
-    }
-})
-
-mqtt_client.on('message',
-    function(topic, answer) {
-        //that.emit('gotAnswer', JSON.parse(answer) );
-        remoteAnswer.value = answer;
-        //document.getElementById('connectRtcBtn').disabled = false;
-        //alert([topic, answer].join(": "))
-    }
-);
-
-/*
-this.sendOffer = function(offer) { // PUBLIC
-    mqtt_client.publish(mqttParam_1.topic_makeOffer, JSON.stringify(offer));
-}
-*/
-
-
-localOffer.value = remoteAnswer.value  = "";
-//remoteOffer.value = localAnswer.value = "";
-
-// BOB: create
-createRTCDataChannelBtn.onclick = function() {
-    //document.getElementById('connectRtcBtn').disabled = true;
-    dc1 = pc.createDataChannel('test', {reliable: true})
-    activedc = dc1
-    
-    dc1.onopen = function(e) {
-        console.log("\nConnected!");
-        //document.getElementById('connectRtcBtn').disabled = true;
-        document.getElementById('connectRtcBtn').innerHTML = 'Connected!';
-        //callbackForConnected();
-        //mqtt_client.end();
-        //that.inputLoop(this.channel);
-    };
-
-    dc1.onmessage = function(e) {
-        if (e.data.size) {
-            fileReceiver1.receive(e.data, {})
-        } else {
-            if (e.data.charCodeAt(0) == 2) {
-                return
-            }
-            var data = JSON.parse(e.data)
-            if (data.type === 'file') {
-                fileReceiver1.receive(e.data, {})
-            } else {
-                display(data.message.cmd);
-                processUp(data.message);
-            }
-        }
-    }
-
-    pc.createOffer( 
-        function(desc) { pc.setLocalDescription(desc, function() {}, function() {})  },
-        function() { },
-        sdpConstraints
-    );
-};
-
-// BOB: pasted Alice's answer
-connectRtcBtn.onclick = function () {
-    var answer = remoteAnswer.value;
-    var answerDesc = new RTCSessionDescription(JSON.parse(answer))
-    console.log('set RemoteDescription --> open a connection?!?') // -> Connected!
-    pc.setRemoteDescription(answerDesc);
-};
-disconnectRtcBtn.onclick = function () {
-    console.log('todo Disconnect');
-    pc.close();
-};
-
-
-// ALICE: pasted Bob's answer
-/*
-offerRecdBtn.onclick = function() {
-  var offer = remoteOffer.value;
-  var offerDesc = new RTCSessionDescription(JSON.parse(offer))
-  pc2.setRemoteDescription(offerDesc)
-  pc2.createAnswer(function(answerDesc) {
-    pc2.setLocalDescription(answerDesc)
-  },
-  function () { },
-  sdpConstraints)
-};
-*/
-
-if (navigator.webkitGetUserMedia) {
-  RTCPeerConnection = webkitRTCPeerConnection
-}
-
-//var cfg = {'iceServers': [{'url': "stun:stun.gmx.net"}]};
 var cfg = { 
         iceServers: [
             {
@@ -203,52 +168,217 @@ var cfg = {
     };
 var con = { 'optional': [{'DtlsSrtpKeyAgreement': true}] };
 
-var pc = new RTCPeerConnection(cfg, con),
-    dc1 = null, tn1 = null, activedc, pc1icedone = false;
+if (navigator.webkitGetUserMedia) {
+  RTCPeerConnection = webkitRTCPeerConnection
+}
+
+var sendChannel = null, tn1 = null, activedc, pc1icedone = false;
 
 var sdpConstraints = {
   optional: [],
 }
 
-pc.onicecandidate = function (e) { // <- pc.createOffer  will cause this to 'fire'
-    //console.log('pc.onicecandidate: e =', e);
-    if (e.candidate == null) {
-        localOffer.value = JSON.stringify(pc.localDescription); // Display localoffer on HTML screeen
-        mqtt_client.publish(mqttParam_1.topic_makeOffer, JSON.stringify(pc.localDescription));
-    }
+
+localOffer.value = remoteAnswer.value  = "";
+//remoteOffer.value = localAnswer.value = "";
+function mqttConnectAndSubscribe( callback, signalling_cb )
+{
+    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    mqttParam_1.topic_sendAnswer = myAnswerPath.value;
+    mqttParam_1.topic_makeOffer  = myOfferPath.value;
+
+    mqttParam_1.mqttServer = 'ws://ocn.cloudns.org:1884';
+    mqttParam_1.topic_sendAnswer = 'sendAnswer';
+    mqttParam_1.topic_makeOffer  = 'makeOffer';
+
+    
+    mqtt_client = mqtt.connect( mqttParam_1.mqttServer )
+    //TODO if mqtt_client not defined
+
+    mqtt_client.subscribe(mqttParam_1.topic_sendAnswer, (err, _z_granted) => {
+        if(err) {
+            console.log('mqtt_client.subscribe(sendAnswer) FAILED')
+            callback(err);
+        }
+        else {
+            console.log('mqtt_client.subscribe(sendAnswer) OK, granted =', _z_granted)
+            //that.ready = true;
+            mqtt_client.on('message', function(topic, answer) {
+                console.log('got mqtt Answer');
+                //that.emit('gotAnswer', JSON.parse(answer) );
+                remoteAnswer.value = answer;
+                signalling_cb(answer);
+            });
+            callback(null, _z_granted)
+        }
+    })
+
+    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 }
 
-pc.oniceconnectionstatechange = function() {
-    console.log('oniceconnectionstatechange: pc.iceConnectionState =', pc.iceConnectionState);
-    switch (pc.iceConnectionState) {
-      case 'failed':
-        console.log('oniceconnectionstatechange: failed ');
-        //util.log('iceConnectionState is disconnected, closing connections to ' + peerId);
-        //connection.emit('error', new Error('Negotiation of connection to ' + peerId + ' failed.'));
-        //connection.close();
-        break;
-      case 'disconnected':
-        console.log('oniceconnectionstatechange: disconnected ');
-        //util.log('iceConnectionState is disconnected, closing connections to ' + peerId);
-        //connection.close();
-        break;
-      case 'completed':
-        console.log('oniceconnectionstatechange: completed ');
-        //pc.onicecandidate = util.noop;
-        break;
+var localPeerConnection = null;
+
+createRTCDataChannelBtn.onclick = function() {
+
+    mqttConnectAndSubscribe( (err, dummystatus) => {
+        if(err){
+            return;
+        }
+
+        localPeerConnection = new RTCPeerConnection(cfg, con);        
+        document.getElementById('createRTCDataChannelBtn').disabled = true;
+        document.getElementById('connectRtcBtn').disabled = true;
+        document.getElementById('connectRtcBtn').innerHTML = 'Waiting for signal';
+        document.getElementById('disconnectRtcBtn').disabled = true;
+        document.getElementById('disconnectRtcBtn').innerHTML = 'Disconnected';
+
+
+        sendChannel = localPeerConnection.createDataChannel('test', {reliable: true})
+        console.log('sendChannel =', sendChannel)
+        activedc = sendChannel
+        
+        sendChannel.onopen = function(e) {
+            console.log("\nConnected!");
+            document.getElementById('connectRtcBtn').innerHTML = 'Connected';
+            document.getElementById('disconnectRtcBtn').disabled = false;
+            document.getElementById('disconnectRtcBtn').innerHTML = 'Click to Disconnect';
+            //callbackForConnected();
+            //mqtt_client.end();
+            //that.inputLoop(this.channel);
+        };
+        sendChannel.onclose = function() { // handleSendChannelStateChange;
+            var readyState = sendChannel.readyState;
+            console.log('sendChannel state is: ' + readyState);
+            if (readyState == "open") {
+                // // Enable 'Send' text area and set focus on it
+                // dataChannelSend.disabled = false;
+                // dataChannelSend.focus();
+                // dataChannelSend.placeholder = "";
+                // // Enable both Send and Close buttons
+                // /sendButton.disabled = false;
+                // closeButton.disabled = false;
+            } else { // event MUST be 'close', if we are here...
+                // // Disable 'Send' text area
+                // dataChannelSend.disabled = true;
+                // // Disable both Send and Close buttons
+                // sendButton.disabled = true;
+                // closeButton.disabled = true;
+            }
+        }
+
+        sendChannel.onmessage = function(e) {
+            if (e.data.size) {
+                fileReceiver1.receive(e.data, {})
+            } else {
+                if (e.data.charCodeAt(0) == 2) {
+                    return
+                }
+                var data = JSON.parse(e.data)
+                if (data.type === 'file') {
+                    fileReceiver1.receive(e.data, {})
+                } else {
+                    display(data.message.cmd);
+                    processUp(data.message);
+                }
+            }
+        }
+
+        localPeerConnection.onicegatheringstatechange = function(state) {
+            console.info('ice gathering state change:', state);
+        };
+
+        localPeerConnection.onsignalingstatechange = function (state) {
+            console.info('signaling state change:', state);
+        };
+
+
+        localPeerConnection.oniceconnectionstatechange = function() {
+            if(!localPeerConnection)
+                return;
+
+            console.log('oniceconnectionstatechange: localPeerConnection.iceConnectionState =', localPeerConnection.iceConnectionState);
+            switch (localPeerConnection.iceConnectionState) {
+            case 'failed':
+                console.log('oniceconnectionstatechange: failed ');
+                //util.log('iceConnectionState is disconnected, closing connections to ' + peerId);
+                //connection.emit('error', new Error('Negotiation of connection to ' + peerId + ' failed.'));
+                //connection.close();
+                localPeerConnection.close();
+                localPeerConnection = null;
+                document.getElementById('createRTCDataChannelBtn').disabled = false;
+                document.getElementById('disconnectRtcBtn').disabled = true;
+                document.getElementById('disconnectRtcBtn').innerHTML = 'Disconnected';
+                break;
+            case 'disconnected':
+                console.log('oniceconnectionstatechange: disconnected ');
+                //util.log('iceConnectionState is disconnected, closing connections to ' + peerId);
+                //connection.close();
+                localPeerConnection.close();
+                localPeerConnection = null;
+                document.getElementById('createRTCDataChannelBtn').disabled = false;
+                document.getElementById('disconnectRtcBtn').disabled = true;
+                document.getElementById('disconnectRtcBtn').innerHTML = 'Disconnected';
+                break;
+            case 'closed':
+                console.log('oniceconnectionstatechange: closed');
+                localPeerConnection = null;
+                document.getElementById('createRTCDataChannelBtn').disabled = false;
+                document.getElementById('disconnectRtcBtn').disabled = true;
+                document.getElementById('disconnectRtcBtn').innerHTML = 'Disconnected';
+                break;
+            case 'completed':
+                console.log('oniceconnectionstatechange: completed ');
+                //localPeerConnection.onicecandidate = util.noop;
+                break;
+            }
+        };
+
+        localPeerConnection.onicecandidate = function (e) { // <- localPeerConnection.createOffer  will cause this to 'fire'
+            console.log('localPeerConnection.onicecandidate: e =', e);
+            if (e.candidate == null) {
+                localOffer.value = JSON.stringify(localPeerConnection.localDescription); // Display localoffer on HTML screeen
+                mqtt_client.publish(mqttParam_1.topic_makeOffer, JSON.stringify(localPeerConnection.localDescription));
+            }
+        }
+
+        localPeerConnection.createOffer( 
+            function(desc) {
+                console.log('localPeerConnection.createOffer: cb1(desc) desc =', desc);
+                localPeerConnection.setLocalDescription(desc, function() {console.log('localPeerConnection.sLD success');}, function() {console.log('localPeerConnection.sLD Failure'); })  
+            },
+            function() {
+                console.log('localPeerConnection.createOffer: cb2');
+            },
+            sdpConstraints
+        );
+    },
+    (answer) => { //signalling_cb
+        document.getElementById('connectRtcBtn').disabled = false;
+        document.getElementById('connectRtcBtn').innerHTML = 'Click to Connect';
     }
+    );
+
+
 };
 
-/*
-function sendMessage () {
-  if (messageTextBox.value) {
-    activedc.send(JSON.stringify({message: messageTextBox.value}));
-    chatlog.innerHTML += '[' + new Date() + '] ' + messageTextBox.value + '</p>';
-    messageTextBox.value = "";
-  }
-  return false
-}
-*/
+
+// BOB: pasted Alice's answer
+connectRtcBtn.onclick = function () {
+    var answer = remoteAnswer.value;
+    var answerDesc = new RTCSessionDescription(JSON.parse(answer))
+    console.log('set RemoteDescription --> open a connection?!?') // -> Connected!
+    localPeerConnection.setRemoteDescription(answerDesc);
+    document.getElementById('connectRtcBtn').disabled = true;
+    document.getElementById('connectRtcBtn').innerHTML = 'Connecting ...';
+};
+disconnectRtcBtn.onclick = function () {
+    console.log('todo Disconnect');
+    if(localPeerConnection)
+        localPeerConnection.close();
+    //localPeerConnection = null;
+};
+
+
 
 var ble_id = 'd81e6c802446';
 //var CONNECT_REM          = 'connect:rem';           // Down
@@ -450,6 +580,7 @@ DL.prototype.Start = function(id, callback)
 }
 
 let E_data = '';
+let E_sample = 0;
 DL.prototype.processCmd = function( procId, data )
 {
 
@@ -517,6 +648,12 @@ DL.prototype.processCmd = function( procId, data )
                     
                     // We now know the interval, so we can estimate the No of samples we need to download
                     pit.P.nSamples = 512; //TODO FUDGE
+                    pit.P.nSamples = 2048; //TODO FUDGE //ASST
+                    pit.P.nSamples = 2 * 6 *60 * 6; //FUDGE 6 hours //ASST
+                    pit.P.nSamples = 2 * 6 *60 * 1; //FUDGE 1 hour //ASST
+                    pit.P.nSamples = 1024; //TODO FUDGE //ASST
+                    pit.P.nSamples = 0; //TODO FUDGE //ASST
+                    pit.P.astep = 0; //ASST
                     /* TODO
                     if( pit.P.TS_history == 0){
                         pit.P.nSamples = 512;
@@ -580,16 +717,16 @@ DL.prototype.processCmd = function( procId, data )
 
                     var Bpkt = Buffer.from(sPkt);
                     this.SendTr4Packet( Bpkt );
+                    E_data = '';
+                    E_sample = 0;
                 }
                 else
+                if( rData[1] == 0x41)
                 {
-                    //proc01.dump_41(rData);
-                    pit.Pit_Process(rData);
-                    //TODO pit.Pit_Save(); - can't get access to local file system from browser
-                    
                     var _buf = Buffer.from(rData);
                     var _len = (_buf[4]<<8) + _buf[3];
                     var count = _len >> 1;
+                    console.log('Sample Count =', count);
 
                     //var _D = new Int8Array(_len);
                     var _D = new Uint8Array(_len);
@@ -598,11 +735,10 @@ DL.prototype.processCmd = function( procId, data )
                         //if(i<10) console.log('D =', _D[i]);
                     }
 
-                    E_data = '';
                     for(var i=0; i<count; i++) {
                         var L = '';
                         L += 'a '; 
-                        L += i * 1.0; 
+                        L += E_sample++ * 1.0; //i * 1.0; 
                         L += ' ';
                         //var _v = (_D[2*i + 1] << 8) + (_D[2*i + 0]); //it.ch1.current.value
                         var _v  = _buf.readUInt16LE(5 + 2*i); //[38] Ch1 Raw          = 1253
@@ -613,16 +749,29 @@ DL.prototype.processCmd = function( procId, data )
                         L += '\n';
                         E_data += L;
                     }
-                    //var S = new Buffer( D ).toString('base64');
-                    //it.ch1.record.data = S;
 
+                    //if( pit.P.astep == 0) { //ASST
+                    //    pit.P.astep = 1; //ASST
+                    if( count > 0) {
+                        var sData = proc01.getPkt_41(0);
+                        var sPkt = proc01.makePkt_9f(sData, 0x26243047);
+                        var Bpkt = Buffer.from(sPkt);
+                        this.SendTr4Packet( Bpkt );
+                    } //ASST
+                    else
+                    { //ASST
+                        //proc01.dump_41(rData);
+                        pit.Pit_Process(rData);
+                        //TODO pit.Pit_Save(); - can't get access to local file system from browser
+                        
+                        //var S = new Buffer( D ).toString('base64');
+                        //it.ch1.record.data = S;
 
-
-
-                    //this.tr4.disconnect();
-                    this.Tr4Disconnect();
-                    this.processCmd('proc_post', 'dummy Data');
-                   // device.disconnect(); //just for testing
+                        //this.tr4.disconnect();
+                        this.Tr4Disconnect();
+                        this.processCmd('proc_post', 'dummy Data');
+                    // device.disconnect(); //just for testing
+                   } //ASST
                 }
             }
             else
@@ -652,6 +801,7 @@ DL.prototype.processCmd = function( procId, data )
             var data = {};
 
             var e_data = '';
+            /*
             for(var i=0; i<250; i++){
                 var L = '';
                 L += 'a '; 
@@ -661,7 +811,7 @@ DL.prototype.processCmd = function( procId, data )
                 L += '\n';
                 e_data += L;
             }
-
+            */
             e_data = E_data;
 
             //console.log('got ' + e_data);
@@ -678,7 +828,8 @@ DL.prototype.processCmd = function( procId, data )
                 //plots.push( { data: data[d].slice(data[d].length - 200) } );
             $.plot( $("#holder"),
                 plots,
-                { series:   { lines: { show: true, fill: true },  }//,
+                //{ series:   { lines: { show: true, fill: true },  }//,
+                { series:   { lines: { show: true, fill: false },  }//,
                   //yaxis:    { min: 0 },
                 } 
             );
@@ -696,36 +847,6 @@ dl.id = ble_id;
 
 
 
-/* ALICE
-var pc2 = new RTCPeerConnection(cfg, con), dc2 = null, pc2icedone = false;
-
-pc2.ondatachannel = function (e) {
-  var datachannel = e.channel || e;
-  dc2 = datachannel
-  activedc = dc2
-  dc2.onopen = function (e) { }
-  dc2.onmessage = function (e) {
-    if (e.data.size) {
-      fileReceiver2.receive(e.data, {})
-    } else {
-      var data = JSON.parse(e.data)
-      if (data.type === 'file') {
-        fileReceiver2.receive(e.data, {})
-      } else {
-        chatlog.innerHTML += '[data.message.cmd] ' + data.message.cmd + '</p>';
-        //chatlog.innerHTML += '[' + new Date() + '] ' + data.message.cmd + '</p>';
-        chatlog.scrollTop = chatlog.scrollHeight;
-      }
-    }
-  }
-}
-
-pc2.onicecandidate = function (e) {
-  if (e.candidate == null) {
-    localAnswer.value = JSON.stringify(pc2.localDescription);
-  }
-}
-*/
 
 </script>
 

@@ -2,7 +2,7 @@
 /node_modules
 
 *.bak
-
+~
 /TR-4BLE_SOHコマンド仕様.doc
 /ＢＬＥ通信フォーマット Ver1.9.xlsx
 /xprint.txt

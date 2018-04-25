@@ -76,6 +76,8 @@ function TdTR4( device, id )
         this.dn.on_disconnect();
         this.emit('tr4:disconnected', this.id);
 
+        console.log('TdTR4: FOR DEBUGGING GOT disconnect. Edit this to allow Auto Exit');
+/*
         console.log('TdTR4: FOR DEBUGGING GOT disconnect. Shutting down soon');
 
         setTimeout(function() {
@@ -83,6 +85,7 @@ function TdTR4( device, id )
             console.log('');
             process.exit(0)
         }, 5000);
+*/        
     });
 
    

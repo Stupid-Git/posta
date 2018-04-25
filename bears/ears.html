@@ -62,20 +62,64 @@ console.log('HostAndPort = ', HostAndPort)
 
 <p>After you submit, notice that the form values is visible in the address bar of the new browser tab.</p>
 
+
+
+
+
+<a id="myUserNameLabel">User Name : </a>
+<input id="myUserName" rows=10 cols=200>
+<button id="getMyBearBtn">Load myBear Number</button>
+<br>
+
+<a> Bear Id : </a>
+<input id="myBearId" rows=10 cols=200>
+<button id="getMyMqttBtn">Load Mqtt Paths</button>
+<br>
+<a> mqttOffer  path : </a>
+<input id="myOfferPath" rows=10 cols=200>
+<br>
+<a> mqttAnswer path : </a>
+<input id="myAnswerPath" rows=10 cols=200>
+<br>
+
+<a id="myModalLabel">Your RTC offer to remote : </a>
+<input id="localOffer" rows=10 cols=200>
+<br>
+<a>The RTC answer form remote : </a>
+<input id="remoteAnswer" rows=10>
+
+<button id="HttpBtn1">sdfack</button>
+<button id="HttpBtn">Send an HTTP GET request to a page and get the result back</button>
+<button id="getMyBugBtn">Load myBug Number</button>
+<br>
+<a id="theAnswer">TBD</a>
+
+
 <script>
 HelloWorld();
-GET_print();
+getPrint();
 </script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
 <script>
 $(document).ready(function(){
-    $("button").click(function(){
-        /*
-        $.get("http://10.2.254.16:8080/api/bears", function(data, status){
-            alert("Data: " + data + "\nStatus: " + status);
-        });
-        */
+
+console.log('ready');
+    myUserName.value='karelX';
+/*
+    $("getMyBearBtnX").click(function(){
+        console.log('getMyBearBtn.click');
+        myBearId.value = 'WTF?';
+    });
+
+    $("buttonX").click(function(){
+        console.log('buttonHTTP.click');
+        
+        //$.get("http://10.2.254.16:8080/api/bears", function(data, status){
+        //    alert("Data: " + data + "\nStatus: " + status);
+        //});
+        
         var myData = {};
         $.ajax({
             url: 'http://10.2.254.16:8080/api/bears',
@@ -88,19 +132,156 @@ $(document).ready(function(){
             beforeSend: function (xhr) {
                 //REM xhr.setRequestHeader('Access-Control-Allow-Origin', 'false')
             },
-            success: function() { alert("Success"); },
+            //success: function() { alert("Success"); },
             error: function(jqXHR) {
                     console.log("ajax error " + jqXHR.status);
                     alert('Failed!');
-                }
+            },
 
+            success: function(data) {         
+                var V = data[0];
+                var s = '';
+                s += '<br>';
+                s += V.name;
+                s += '<br>';
+                s += V.offer.quote;
+                s += '<br>';
+                s += V.offer.mqttofferin;
+                s += '<br>';
+                document.getElementById("theAnswer").innerHTML = s; //JSON.stringify(data);
+                
+                //$( "body" )
+                //    .append( "<br><br>Name: " + V.name ) // John
+                //    .append( "<br>" )
+                //    .append( "Time: " + V.dateStamp ); //  2pm
+                
+            }//,
+            //error: function() {
+            //    $('#notification-bar').text('An error occurred');
+            //}
         });
     });
+    */
 });
 </script>
 
-<button id="button">Send an HTTP GET request to a page and get the result back</button>
+<script>
+    myBearId.value = 'wtf?';
+        
+    getMyBearBtn.onclick = function () {
+        console.log('getMyBearBtn.click');
+        myBearId.value = 'Please wait. Computing...';
 
+        $.ajax({
+            url: 'http://10.2.254.16:8080/api/uzas/karel',
+            type: 'GET',
+            datatype: 'jsonp',
+
+            error: function(jqXHR) {
+                console.log("ajax error " + jqXHR.status);
+                alert('Failed!');
+            },
+
+            success: function(data) {         
+                console.log("data " + data);
+                var bears = data.bears;
+                var bearId = bears[0];
+                document.getElementById("myBearId").innerHTML = bearId;
+                myBearId.value = bearId;
+            }
+        });
+    };
+
+    getMyMqttBtn.onclick = function () {
+        console.log('getMyMqttBtn.click');
+        myOfferPath.value = 'Please wait. Computing...';
+        myAnswerPath.value = 'Please wait. Computing...';
+
+        $.ajax({
+            url: 'http://10.2.254.16:8080/api/bears/' + myBearId.value,
+            type: 'GET',
+            datatype: 'jsonp',
+
+            error: function(jqXHR) {
+                console.log("ajax error " + jqXHR.status);
+                alert('Failed!');
+            },
+
+            success: function(data) {
+                console.log("data " + data);
+                var offer = data.offer;
+                myOfferPath.value = offer.mqttofferin;
+                myAnswerPath.value = offer.mqttanswerout;
+                //var offer = { 
+                //    quote: 'No one fucks with The Jesus 2', 
+                //    mqttofferin : '/de543deac2398cb8def/offerin',
+                //    mqttanswerout : '/de543deac2398cb8def/answerout',
+                //};
+            }
+        });
+    }
+
+    getMyBugBtn.onclick = function () {
+        console.log('getMyBugBtn.click');
+        myBearId.value = 'BBUUGG??';
+    };
+    HttpBtn1.onclick = function() {
+        console.log('HttpBtn1.click');
+    };
+
+    //$("buttonHTTP").click(function(){
+    HttpBtn.onclick = function() {
+        console.log('HttpBtn.click');
+
+        //$.get("http://10.2.254.16:8080/api/bears", function(data, status){
+        //    alert("Data: " + data + "\nStatus: " + status);
+        //});
+        
+        var myData = {};
+        $.ajax({
+            url: 'http://10.2.254.16:8080/api/bears',
+           //data: myData,
+            type: 'GET',
+            //crossDomain: true,
+            datatype: 'jsonp',
+            //callback: '?',
+            //datatype: 'application/json',
+            beforeSend: function (xhr) {
+                //REM xhr.setRequestHeader('Access-Control-Allow-Origin', 'false')
+            },
+            //success: function() { alert("Success"); },
+            error: function(jqXHR) {
+                    console.log("ajax error " + jqXHR.status);
+                    alert('Failed!');
+            },
+
+            success: function(data) {         
+                var V = data[0];
+                var s = '';
+                s += '<br>';
+                s += V.name;
+                s += '<br>';
+                s += V.offer.quote;
+                s += '<br>';
+                s += V.offer.mqttofferin;
+                s += '<br>';
+                document.getElementById("theAnswer").innerHTML = s; //JSON.stringify(data);
+                
+                //$( "body" )
+                //    .append( "<br><br>Name: " + V.name ) // John
+                //    .append( "<br>" )
+                //    .append( "Time: " + V.dateStamp ); //  2pm
+                
+            }//,
+            //error: function() {
+            //    $('#notification-bar').text('An error occurred');
+            //}
+        });
+        
+    };
+
+
+</script>
 
 </body>
 </html> 

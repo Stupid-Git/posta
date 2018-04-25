@@ -33317,7 +33317,7 @@ HelloWorld = function()
     console.log('Hello World. I am Bear with id =', myId);
 }
 
-GET_print = function() {
+getPrint = function() {
     request.get(HostAndPort + '/api/bears', function (err, httpResponse, body) {
         console.log('request.get   err =',err);
         console.log('request.get   body =', body);
