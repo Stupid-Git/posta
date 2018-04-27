@@ -49,14 +49,15 @@ document.getElementById("HHH").innerHTML = "--HHH--";
 
 //header("Access-Control-Allow-Origin: *");
 console.log('HostAndPort = ', HostAndPort)
-HostAndPort = 'http://10.2.254.16:8080';
+//HostAndPort = 'http://10.2.254.16:8080';
+HostAndPort = 'http://ocn.cloudns.org:6565';
 console.log('HostAndPort = ', HostAndPort)
 </script>
 
 <h2>The method Attribute</h2>
 <p>This form will be submitted using the GET method:</p>
 
-<form action="http://10.2.254.16:8080/api/bears" target="_blank" method="GET">
+<form action="http://ocn.cloudns.org:6565/api/bears" target="_blank" method="GET">
   <input type="submit" value="Submit">
 </form>
 
@@ -116,13 +117,13 @@ console.log('ready');
     $("buttonX").click(function(){
         console.log('buttonHTTP.click');
         
-        //$.get("http://10.2.254.16:8080/api/bears", function(data, status){
+        //$.get("http://ocn.cloudns.org:6565/api/bears", function(data, status){
         //    alert("Data: " + data + "\nStatus: " + status);
         //});
         
         var myData = {};
         $.ajax({
-            url: 'http://10.2.254.16:8080/api/bears',
+            url: 'http://ocn.cloudns.org:6565/api/bears',
            //data: myData,
             type: 'GET',
             //crossDomain: true,
@@ -173,7 +174,7 @@ console.log('ready');
         myBearId.value = 'Please wait. Computing...';
 
         $.ajax({
-            url: 'http://10.2.254.16:8080/api/uzas/karel',
+            url: 'http://ocn.cloudns.org:6565/api/uzas/karel',
             type: 'GET',
             datatype: 'jsonp',
 
@@ -198,7 +199,7 @@ console.log('ready');
         myAnswerPath.value = 'Please wait. Computing...';
 
         $.ajax({
-            url: 'http://10.2.254.16:8080/api/bears/' + myBearId.value,
+            url: 'http://ocn.cloudns.org:6565/api/bears/' + myBearId.value,
             type: 'GET',
             datatype: 'jsonp',
 
@@ -233,13 +234,13 @@ console.log('ready');
     HttpBtn.onclick = function() {
         console.log('HttpBtn.click');
 
-        //$.get("http://10.2.254.16:8080/api/bears", function(data, status){
+        //$.get("http://ocn.cloudns.org:6565/api/bears", function(data, status){
         //    alert("Data: " + data + "\nStatus: " + status);
         //});
         
         var myData = {};
         $.ajax({
-            url: 'http://10.2.254.16:8080/api/bears',
+            url: 'http://ocn.cloudns.org:6565/api/bears',
            //data: myData,
             type: 'GET',
             //crossDomain: true,

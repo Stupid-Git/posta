@@ -69,7 +69,8 @@ let id2 = machineIdSync({original: true})
 //console.log('machineIdSync 1 ', id1);
 //console.log('machineIdSync 2 ', id2);
 
-var HostAndPort = 'http://localhost:8080';
+//var HostAndPort = 'http://localhost:8080';
+var HostAndPort = 'http://ocn.cloudns.org:6565';
 
 var Bear = class {
 
@@ -85,7 +86,6 @@ var Bear = class {
 
     getPrint() {
         request.get(HostAndPort + '/api/bears/'+this.myId, function (err, httpResponse, body) {
-
             var data = JSON.parse(body);
             console.log('request.get   data =', data);
             console.log('--------------------------------------------------------------------------------');
@@ -94,216 +94,144 @@ var Bear = class {
 
     getAllPrint() {
         request.get(HostAndPort + '/api/bears/', function (err, httpResponse, body) {
-            console.log('request.get   err =',err);
-            console.log('request.get   body =', body);
-
+            //console.log('request.get   err =',err);
+            //console.log('request.get   body =', body);
             var data = JSON.parse(body);
             data.forEach( function(element) {
                 console.log('--------------------------------------------------------------------------------');
                 console.log(element);
             });
             console.log('--------------------------------------------------------------------------------');
-                        
-            //console.log('request.get   body._id =', data._id);
-            //console.log('request.get   body.name =', data.name);
-            //console.log('--------------------------------------------------------------------------------');
         });
     }
 
     loadFullData( cb ) {
         request.get(HostAndPort + '/api/bears/'+this.myId, function (err, httpResponse, body) {
-            if( err )
+            if( err ) {
                 cb( err);
-
+                return;
+            }
             var data = JSON.parse(body);
-            //console.log('request.get   body._id =', data._id);
-            //console.log('--------------------------------------------------------------------------------');
             cb( err, data ); // note: err == null at this point
         });
     }
 
-    getOffer( cb ) {
+    getDataBear( cb ) {
         request.get(HostAndPort + '/api/bears/'+this.myId, function (err, httpResponse, body) {
-            if( err )
-                cb( err);
-
+            if( err ) {
+                cb( err );
+                return;
+            }
             var data = JSON.parse(body);
-            var offer = data.offer;
-            //console.log('request.get   body._id =', data._id);
-            //console.log('--------------------------------------------------------------------------------');
-            cb( err, offer ); // note: err == null at this point
+            //console.log('request.get   data =', data );
+            cb( err, data.bear ); // note: err == null at this point
         });
     }
     
-    setOffer(tdid, offer, cb) {
-        //console.log('this.myId = ', this.myId);       
-        // direct way
+    putDataBear(tdid, offer, cb) {
         request.get(HostAndPort + '/api/bears/'+this.myId, function (err, httpResponse, body) {
-            //console.log('request.get err =',err);
-            //console.log('request.get body =', body);
+            if( err ) {
+                cb( err );
+                return;
+            }
             var data = JSON.parse(body);
-            //console.log('request.get body._id =', data._id);
-            var _id = data._id;
-            if( _id == null)
-                cb('Error: ID not found') //return;
+            var bear = data.bear;
+            if( !bear ) {
+                cb( null, { message: 'NG Entry not found', bear: data.bear} );
+                return;
+            }
 
-            request.put(HostAndPort + '/api/bears/'+_id, {
+            request.put(HostAndPort + '/api/bears/'+bear._id, {
                 form: {
                     tdid : tdid,
                     offer : offer
                 }
                 }, function (err, httpResponse, body) {
-                    
-                    if(err)
-                        cb(err)
+                    if(err) {
+                        cb(err);
+                        return;
+                    }
+                    var data = JSON.parse(body);   //{"message":"Bear updated!","bear":{"_id":"5ae1813f60377420023f55cb","name":"9ee278a8-c068-4934-a2d7-9e8a977f44b3","__v":0,"dateStamp":"Thu Apr 26 2018 16:51:56 GMT+0900 (JST)","offer":{"quote":"No one fucks with The Jesus ","mqttofferin":"/de543deac2398cb8def/offerin","mqttanswerout":"/de543deac2398cb8def/answerout"},"timeStamp":1524729116718}}
 
-                    cb( null, 'OK');
-                    //console.log('=====================================================================');
-                    //console.log('request.put err =', err);
-                    //console.log('=====================================================================');
-                    //console.log('request.put body =', body);
-                    //console.log('=====================================================================');
+                    var bear = data.bear;
+                    cb( null, { message: 'OK Entry updated', bear: data.bear} );
             });                      
         });
 
     }
 
-    make_me() {
-        console.log('this.myId = ', this.myId);   
-
-        request.post(HostAndPort + '/api/bears', {
-            form: {
-                name : this.myId
-            }
-        }, function (err, httpResponse, body) {
-            
-            //console.log('=====================================================================');
-            //console.log( err );
-            ////console.log('=====================================================================');
-            ////console.log( httpResponse );
-            //console.log('=====================================================================');
-            //console.log( body); // == {"message":"Bear created!"}
-            //console.log('=====================================================================');
-        
-            // direct way
-            request.get(HostAndPort + '/api/bears', function (err, httpResponse, body) {
-                console.log('request.get   err =',err);
-                console.log('request.get   body =', body);
-                console.log('--------------------------------------------------------------------------------');
-            });
-                //client.get(HostAndPort + '/api/bears', function (data, response) {
-            //    console.log(data);
-            //});
-        
-        });
-        
-    }
-
-    check_me() {
-        //console.log('this.myId = ', this.myId);   
+    getOrCreateBear( cb ) {
         var that = this;
+        //console.log('req.body.name: this.myId = ', this.myId);   
+
         request.get(HostAndPort + '/api/bears/'+this.myId, function (err, httpResponse, body) {
-            //console.log('request.get   err =',err);
-            //console.log('request.get   body =', body);
-
-            var data = JSON.parse(body);
-
-            //var data = JSON.parse(body);
-            //console.log('request.get   body._id =', data._id);
-            //console.log('request.get   body.name =', data.name);
-            if(data.message) {
-                if(data.message == 'Bear not found!') {
-                    that.make_me();
-                } else {
-                    console.log('message != Bear not ..')
-                }
-            } else {
-                console.log('No message')
+            if(err) {
+                console.log('getOrCreateBear: request.get:   error =', err);
+                cb( err );
+                return;
             }
-            //console.log('--------------------------------------------------------------------------------');
-        });
+            var data = JSON.parse( body );
+            var bear = data.bear;
 
-        // direct way
-        /*
-        client.get(HostAndPort + '/api/bears/'+this.myId, function (data, response) {
-            // parsed response body as js object
-            console.log(data);
-            if(data.message == 'Bear not found!') {
-                make_me(this.myId);
+            if( bear ) {
+                cb( null, { message: 'OK Entry already exists', bear: data.bear} );
+                return;
             }
-
-            // raw response
-            //console.log(response);
-        });
-        */    
-    }
-
-
-    check_me2(tdid, offer, cb) {
-        //console.log('this.myId = ', this.myId);       
-        // direct way
-        request.get(HostAndPort + '/api/bears/'+this.myId, function (err, httpResponse, body) {
-            //console.log('request.get err =',err);
-            //console.log('request.get body =', body);
-            var data = JSON.parse(body);
-            //console.log('request.get body._id =', data._id);
-            var _id = data._id;
-            if( _id == null)
-                cb('Error: ID not found') //return;
-
-            request.put(HostAndPort + '/api/bears/'+_id, {
-                form: {
-                    tdid : tdid,
-                    offer : offer
-                }
+            else //if( data.message == 'NG Entry not found') // create new
+            {
+                request.post(HostAndPort + '/api/bears', {
+                    form: {
+                        name : that.myId
+                    }
                 }, function (err, httpResponse, body) {
-                    
-                    if(err)
-                        cb(err)
-
-                    cb( null, 'OK');
-                    //console.log('=====================================================================');
-                    //console.log('request.put err =', err);
-                    //console.log('=====================================================================');
-                    //console.log('request.put body =', body);
-                    //console.log('=====================================================================');
-            });                      
+                    if(err) {
+                        console.log('request.post:   error =', err);
+                        cb(err);
+                        return;
+                    }
+                    var data = JSON.parse( body ); //{ message: 'OK Bear created', bear : bear }
+                    cb( null, { message: 'OK Entry created', bear: data.bear });
+                });        
+            }
         });
-
     }
 
-    jesus_1()
-    {
-        //check_me();
-        //var offer = JSON.stringify({ quote: 'No one fucks with the Jesus!'});
-        var offer = { quote: 'No one fucks with The Jesus 1', mqttofferin : '/de543deac2398cb8def/offerin'};
-        //this.check_me2( '112233445566', offer, (err, data) => {}   );
-        this.check_me2( null, offer, (err, data) => {} );
+    deleteBear( cb )
+    {        
+        request.get(HostAndPort + '/api/bears/'+this.myId, function (err, httpResponse, body) {
+            if(err) {
+                console.log('deleteBear: request.get:   error =', err);
+                cb( err );
+                return;
+            }
+
+            var data = JSON.parse( body );
+            var bear = data.bear;
+            //console.log('deleteBear: request.get:   data =', data );            
+
+            if(!bear) // e.g. data = { message: 'Bear not found!', id: '9ee278a8-c068-4934-a2d7-9e8a977f44b3' }
+            {
+                //console.log('deleteBear: request.get:   err: no data._id');
+                cb( null, { message: 'OK No entry existed' } );
+                return;
+            }
+            request.delete(HostAndPort + '/api/bears/'+bear._id, function (err, httpResponse, body) {
+                if(err) {
+                    console.log('deleteBear: request.delete:   error =', err);
+                    cb( err );
+                    return;
+                }
+                var data = JSON.parse(body);
+                //console.log('deleteBear: request.delete:   data =', data); //data = { message: 'OK Successfully deleted' }
+                cb( null, { message: 'OK Successfully deleted' } );
+            });
+
+        });
     }
-    jesus_2()
-    {
-        //check_me();
-        //var offer = JSON.stringify({ quote: 'No one fucks with the Jesus!'});
-        var offer = { 
-            quote: 'No one fucks with The Jesus 2', 
-            mqttofferin : '/de543deac2398cb8def/offerin',
-            mqttanswerout : '/de543deac2398cb8def/answerout',
-        };
-        //this.check_me2( '112233445566', offer , (err, data) => {}  );
-        this.check_me2( null, offer, (err, data) => {}   );
-    }
-    jesus_n(n, cb)
-    {
-        //check_me();
-        //var offer = JSON.stringify({ quote: 'No one fucks with the Jesus!'});
-        var offer = { 
-            quote: 'No one fucks with The Jesus ' + n.toString(), 
-            mqttofferin : '/de543deac2398cb8def/offerin',
-            mqttanswerout : '/de543deac2398cb8def/answerout',
-        };
-        //this.check_me2( '112233445566', offer, (err, data) => {}   );
-        this.check_me2( null, offer, (err, data) => { cb(err,data)}   );
-    }
+
+
+
+
 
 
     /*

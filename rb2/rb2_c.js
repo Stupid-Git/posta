@@ -27,14 +27,18 @@ var plug_it = new Plug_Sio();
 // IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT
 // IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT
 var mqttParam_1 = { mqttServer : 'mqtt://ocn.cloudns.org',
-topic_sendAnswer: 'sendAnswer',
-topic_makeOffer:  'makeOffer'
+//topic_sendAnswer: 'sendAnswer', // tbd_topic_base_sendAnswer
+//topic_makeOffer:  'makeOffer'   // tbd_topic_base_makeOffer
+topic_sendAnswer: 'tbd_topic_base_sendAnswer', 
+topic_makeOffer:  'tbd_topic_base_makeOffer'
 };
 
 var Cm = require('../mqrtc/cm');
 var Crtc = require('../mqrtc/crtc');
 
-var cm = new Cm(mqttParam_1);
+//OLD var cm = new Cm(mqttParam_1);
+var cm = new Cm(); //NEW
+//cm.Start(mqttParam_1); //NEW
 var crtc = new Crtc('dummyParam');
 
 callbackForConnected = function()
@@ -58,6 +62,115 @@ var plug_it = new Plug_Rtc(crtc);
 
 // IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT IT
 
+// BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+var Bear = require('../bears/bear.js').Bear;
+var Uza = require('../bears/uza.js').Uza;
+
+
+const machineIdSync = require('node-machine-id').machineIdSync;
+let mid = machineIdSync({original: true})
+console.log('machineIdSync mid ', mid);
+
+// FORCE
+//mid = '9ee278a8-c068-4934-a2d7-9e8a977f44_0';
+//console.log('machineIdSync mid ', mid);
+//var mid = mid.substr(0, mid.length-2) + '_' + '0';
+//console.log('machineIdSync mid ', mid);
+
+var rb2_bear;
+rb2_bear = new Bear(mid);
+
+function update_rb2_bear() {
+
+    rb2_bear.getOrCreateBear( (err, data) => {
+
+        if(err) {
+            console.log('T: loadFullData   err =', err);
+            return;
+        }
+        console.log('T: getOrCreateBear returned data.bear._id =', data.bear._id);
+    
+        console.log('T: --------------------------------------------------------------------------------');
+    
+        var offer = { 
+            quote: 'This Bear was set from rb2_c', 
+            mqttofferin :   'Xtbd_topic_base/makeOffer',
+            mqttanswerout : 'Xtbd_topic_base/sendAnswer',
+        };
+        
+        mqttParam_1.mqttServer = 'mqtt://ocn.cloudns.org';
+        mqttParam_1.topic_sendAnswer = offer.mqttanswerout; //'tbd_topic_base_sendAnswer'; 
+        mqttParam_1.topic_makeOffer = offer.mqttofferin; // 'tbd_topic_base_makeOffer';
+
+        cm.Start(mqttParam_1); //NEW
+
+
+        rb2_bear.putDataBear( null, offer, (err, data) => {
+    
+            console.log('T: putDataBear.data.bear._id =', data.bear._id);
+            
+            rb2_bear.getDataBear( (err, bear) => {
+                console.log('T: getDataBear.offer =', bear.offer);
+
+                update_rb2_uza( bear.name );
+                /*
+                rb2_bear.loadFullData( (err, data) => {
+                    if(err) {
+                        console.log('T: loadFullData return error =', err);
+                        return;
+                    }
+                    console.log('T: loadFullData returned data.bear._id =', data.bear._id);
+    
+                    doDeleteBears();
+    
+                });
+                */
+            });
+        })
+    })
+}
+
+
+//var rb2_uza = new Uza('karel');
+var rb2_uza = new Uza('john');
+
+function update_rb2_uza( bearName ) {
+
+    rb2_uza.getOrCreateUser( (err, data) => {
+        if(err) {
+            console.log('T: getOrCreateUser   err =', err);
+            return;
+        }
+        console.log('T: KKKgetOrCreateUser returned data.uza._id =', data.uza._id);
+        console.log('T: KKKgetOrCreateUser returned data =', data);
+    
+        
+        function doGetPutUza() {
+            console.log('T: KKKdoGetPutUza');
+            rb2_uza.getDataUza( (err, uza) => {
+    
+                //uza.bears.push('teddyBear');
+                uza.bears[0] = bearName;
+                //uza.bears[0] = '9ee278a8-c068-4934-a2d7-9e8a977f44b3'; // local vscodeconsole ID
+                //uza.bears[0] = '9ee278a8-c068-4934-a2d7-9e8a977f44_0';
+                //console.log('T: uza =', uza);
+                //console.log('T: uza.name =', uza.name);
+                console.log('T: KKKuza.bears =', uza.bears);
+                rb2_uza.putDataUza(null, uza.bears, (err, data) => {
+    
+                });
+            });
+        }
+        setTimeout(doGetPutUza, 100);
+    });
+
+}
+
+//===== START =====
+update_rb2_bear();
+//===== START =====
+
+// BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
 
 plug_sio_setup();
 

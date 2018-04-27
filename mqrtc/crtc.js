@@ -21,7 +21,7 @@ function Crtc( dummyParam )
 
     var that = this;
 
-    //function setOffer( offer ) { // NOT PUBLIC
+    //function setOfferTesting( offer ) { // NOT PUBLIC
     this.setOfferTesting = function( offer ) {
         var answer =  { text : "WTF" };
         that.emit('gotAnswer', answer);

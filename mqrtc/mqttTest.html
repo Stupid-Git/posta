@@ -36,7 +36,7 @@
         var _userName = myUserName.value;
 
         $.ajax({
-            url: 'http://10.2.254.16:8080/api/uzas/' + _userName,
+            url: 'http://ocn.cloudns.org:6565/api/uzas/' + _userName,
             type: 'GET',
             datatype: 'jsonp',
 
@@ -46,8 +46,10 @@
             },
 
             success: function(data) {         
-                console.log("data " + data);
-                var bears = data.bears;
+                console.log("data =", data);
+                var message = data.message;
+                var uza = data.uza;
+                var bears = uza.bears;
                 var bearId = bears[0]; // default to first bear in the list
                 //document.getElementById("myBearId").innerHTML = bearId;
                 myBearId.value = bearId;
@@ -59,9 +61,11 @@
         console.log('getMyMqttBtn.click');
         myOfferPath.value = 'Please wait. Computing...';
         myAnswerPath.value = 'Please wait. Computing...';
+        myOfferPath.value = 'makeOffer';
+        myAnswerPath.value = 'sendAnswer';
 
         $.ajax({
-            url: 'http://10.2.254.16:8080/api/bears/' + myBearId.value,
+            url: 'http://ocn.cloudns.org:6565/api/bears/' + myBearId.value,
             type: 'GET',
             datatype: 'jsonp',
 
@@ -71,8 +75,10 @@
             },
 
             success: function(data) {
-                console.log("data " + data);
-                var offer = data.offer;
+                console.log("data =", data);
+                var message = data.message;
+                var bear = data.bear;                
+                var offer = bear.offer;
                 myOfferPath.value = offer.mqttofferin;
                 myAnswerPath.value = offer.mqttanswerout;
                 //var offer = { 
@@ -104,10 +110,21 @@
 <button id="sendCmd9eBtn" onclick="sendCmd_9e()">Send Cmd 9e</button>
 
 <hr>
+<div>
+    <span id='box1' style="display:inline-block; font-size:8px; height:20px; width:40px; background-color:LightGray"></span>
+    <span id='box2' style="display:inline-block; font-size:8px; height:20px; width:40px; background-color:LightGray"></span>
+    <span id='box3' style="display:inline-block; font-size:8px; height:20px; width:40px; background-color:LightGray"></span>
+</div>
 Log:
 <br>
+<!--
 <div id="chatlog" style="height:200px; overflow:auto; border:1px solid"></div>
-<br>
+-->
+<div id="chatlog" style="height:200px; overflow:auto; border:1px solid; 
+                    background-color:lightblue;
+                    font-size: 9px;">
+Test text
+</div>
 <!--
 <input type="text" id="messageTextBox" placeholder="Type your message here">
 <button id="sendMessageBtn" onclick="sendMessage()">Send message</button>
@@ -122,6 +139,9 @@ Log:
 <script src="../proc01ify.js"></script>
 
 <script>
+//var box1 = document.querySelector("box1");
+var box1 =document.getElementById('box1');
+
 //var Buffer;
 var pit = new Pit();
 
@@ -172,7 +192,7 @@ if (navigator.webkitGetUserMedia) {
   RTCPeerConnection = webkitRTCPeerConnection
 }
 
-var sendChannel = null, tn1 = null, activedc, pc1icedone = false;
+var sendChannel = null, activedc, pc1icedone = false;
 
 var sdpConstraints = {
   optional: [],
@@ -188,9 +208,12 @@ function mqttConnectAndSubscribe( callback, signalling_cb )
     mqttParam_1.topic_makeOffer  = myOfferPath.value;
 
     mqttParam_1.mqttServer = 'ws://ocn.cloudns.org:1884';
-    mqttParam_1.topic_sendAnswer = 'sendAnswer';
-    mqttParam_1.topic_makeOffer  = 'makeOffer';
+    //mqttParam_1.topic_sendAnswer = 'sendAnswer';
+    //mqttParam_1.topic_makeOffer  = 'makeOffer';
 
+    console.log('######################## mqttParam_1.topic_sendAnswer =', mqttParam_1.topic_sendAnswer);
+    console.log('######################## mqttParam_1.topic_makeOffer  =', mqttParam_1.topic_makeOffer);
+    
     
     mqtt_client = mqtt.connect( mqttParam_1.mqttServer )
     //TODO if mqtt_client not defined
@@ -231,10 +254,12 @@ createRTCDataChannelBtn.onclick = function() {
         document.getElementById('connectRtcBtn').innerHTML = 'Waiting for signal';
         document.getElementById('disconnectRtcBtn').disabled = true;
         document.getElementById('disconnectRtcBtn').innerHTML = 'Disconnected';
+        document.getElementById('box2').style.backgroundColor = "lightgray";
+
 
 
         sendChannel = localPeerConnection.createDataChannel('test', {reliable: true})
-        console.log('sendChannel =', sendChannel)
+        console.log('New Local Data Channel =', sendChannel)
         activedc = sendChannel
         
         sendChannel.onopen = function(e) {
@@ -242,6 +267,8 @@ createRTCDataChannelBtn.onclick = function() {
             document.getElementById('connectRtcBtn').innerHTML = 'Connected';
             document.getElementById('disconnectRtcBtn').disabled = false;
             document.getElementById('disconnectRtcBtn').innerHTML = 'Click to Disconnect';
+            document.getElementById('box2').style.backgroundColor = "limegreen";
+            
             //callbackForConnected();
             //mqtt_client.end();
             //that.inputLoop(this.channel);
@@ -308,6 +335,7 @@ createRTCDataChannelBtn.onclick = function() {
                 document.getElementById('createRTCDataChannelBtn').disabled = false;
                 document.getElementById('disconnectRtcBtn').disabled = true;
                 document.getElementById('disconnectRtcBtn').innerHTML = 'Disconnected';
+                document.getElementById('box2').style.backgroundColor = "lightgray";
                 break;
             case 'disconnected':
                 console.log('oniceconnectionstatechange: disconnected ');
@@ -318,6 +346,7 @@ createRTCDataChannelBtn.onclick = function() {
                 document.getElementById('createRTCDataChannelBtn').disabled = false;
                 document.getElementById('disconnectRtcBtn').disabled = true;
                 document.getElementById('disconnectRtcBtn').innerHTML = 'Disconnected';
+                document.getElementById('box2').style.backgroundColor = "lightgray";
                 break;
             case 'closed':
                 console.log('oniceconnectionstatechange: closed');
@@ -325,6 +354,7 @@ createRTCDataChannelBtn.onclick = function() {
                 document.getElementById('createRTCDataChannelBtn').disabled = false;
                 document.getElementById('disconnectRtcBtn').disabled = true;
                 document.getElementById('disconnectRtcBtn').innerHTML = 'Disconnected';
+                document.getElementById('box2').style.backgroundColor = "lightgray";
                 break;
             case 'completed':
                 console.log('oniceconnectionstatechange: completed ');
@@ -353,6 +383,9 @@ createRTCDataChannelBtn.onclick = function() {
         );
     },
     (answer) => { //signalling_cb
+        box1.innerHTML="";
+        box1.style.backgroundColor = "limegreen";
+        //document.getElementById('box1').innerHTML = "X";
         document.getElementById('connectRtcBtn').disabled = false;
         document.getElementById('connectRtcBtn').innerHTML = 'Click to Connect';
     }
@@ -386,7 +419,8 @@ var ble_id = 'd81e6c802446';
 function display( text )
 {
     //chatlog.innerHTML += '[' + new Date() + '] ' + text + '</p>';
-    chatlog.innerHTML += '[...] ' + text + '</p>';
+    //chatlog.innerHTML += '[...] ' + text + '</p>';
+    chatlog.innerHTML += '[...] ' + text + '</br>';
     chatlog.scrollTop = chatlog.scrollHeight
 }
 
@@ -458,9 +492,11 @@ function processUp(dataIn)
             var _status = dataIn.payload.status;
             //console.log('Connection Status : id = ', _id, 'status = ', _status );
             if(_status == true) {
+                document.getElementById('box3').style.backgroundColor = "limegreen";
                 dl.OnTR4_Connected( _id )
             }
             if(_status == false) {
+                document.getElementById('box3').style.backgroundColor = "lightgray";
                 dl.OnTR4_Disconnected( _id )
             }
             break;

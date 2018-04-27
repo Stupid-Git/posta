@@ -33308,7 +33308,8 @@ const request = require('request');
 //NG request.use(cors());
 
 //var 
-HostAndPort = 'http://localhost:8080';
+//HostAndPort = 'http://localhost:8080';
+HostAndPort = 'http://ocn.cloudns.org:6565';
 
 var myId = 'FakeId';
 

@@ -1,94 +1,39 @@
 
-
 var Bear = require('./bear.js').Bear;
 var Uza = require('./uza.js').Uza;
 
-var bearA = [];
-
 const machineIdSync = require('node-machine-id').machineIdSync;
-let id2 = machineIdSync({original: true})
-// id = 98912984-c4e9-5ceb-8000-03882a0485e4
+let mid = machineIdSync({original: true})
+// mid = 98912984-c4e9-5ceb-8000-03882a0485e4
 
-console.log('machineIdSync id2 ', id2);
-var id3 = id2.substr(0, id2.length-2) + '_' + '0';
-console.log('machineIdSync id3 ', id3);
-/*
-var s = "this is a test string.".substr(19, 3);
-var s1 = "this is a test string.".slice(15, 21);
-console.log(s);
-console.log(s1);
-*/
+console.log('T: machineIdSync mid =', mid);
+//var mid3 = mid.substr(0, mid.length-2) + '_' + '0';
+//console.log('machineIdSync mid3 ', mid3);
 
-/**/
+console.log('T: --------------------------------------------------------------------------------');
 var b;
-b = new Bear(id2);
-bearA.push(b)
-b = new Bear(id3);
-bearA.push(b)
+b = new Bear(mid);
 
-//console.log('--------------------------------------------------------------------------------');
-bearA[0].getPrint();
-bearA[0].check_me();
-//console.log('--------------------------------------------------------------------------------');
-bearA[1].getPrint();
-bearA[1].check_me();
-bearA[1].jesus_2();
-/**/
 
-/*
-b = bearA[1];
-b.jesus_n(111, (err, data) => {
-    console.log('[ CB ] data = ', data);
 
-    b.loadFullData( (err, data) => {
-        if(err)
-            return;
-        console.log('[...] data.name', data.name);
-        console.log('[...] data.offer.quote', data.offer.quote);
-    
-        b.jesus_n(110, (err, data) => {
-            console.log('[ CB ] data = ', data);
-            b.loadFullData( (err, data) => {
-                if(err)
-                    return;
-                console.log('[...] data.name', data.name);
-                console.log('[...] data.offer.quote', data.offer.quote);            
-            });
-        });
-    
-    });
-});
-*/
-
-/*
-b = bearA[1];
-b.getOffer( (err, offer) => {
-
-    var quote = offer.quote;
-    quote += '7';
-    offer.quote = quote;
-
-    b.setOffer(null, offer, (err, data) => {
-
-    });
-});
-*/
 
 //b.getAllPrint();
 
 var u0 = new Uza('karel');
-//u0.createUser_me();
+//u0.createUser_me( (err) => {} );
+u0.getOrCreateUser( (err, data) => {} );
 
 var u1 = new Uza('john');
-//u1.createUser_me();
+//u1.createUser_me( (err) => {} );
+u1.getOrCreateUser( (err, data) => {} );
 
-function doDeletes()
+function doDeleteUsers()
 {
-    //u0.deleteUser_me();
-    //u1.deleteUser_me();
+    //u0.deleteUser_me( (err) => {} );
+    //u1.deleteUser_me( (err) => {} );
 }
 
-setTimeout( doDeletes, 3000);
+setTimeout( doDeleteUsers, 3000);
 
 u0.getBears( (err, bears) => {
 

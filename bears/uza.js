@@ -4,8 +4,8 @@
 
 const request = require('request');
 
-
-var HostAndPort = 'http://localhost:8080';
+//var HostAndPort = 'http://localhost:8080';
+var HostAndPort = 'http://ocn.cloudns.org:6565';
 
 var Uza = class {
 
@@ -53,7 +53,7 @@ var Uza = class {
             cb( err, data ); // note: err == null at this point
         });
     }
-
+    /*
     getBears( cb ) {
         request.get(HostAndPort + '/api/uzas/'+this.myName, function (err, httpResponse, body) {
             if( err ) {
@@ -65,7 +65,6 @@ var Uza = class {
             cb( err, bears ); // note: err == null at this point
         });
     }
-    
     setBears(tdid, bears, cb) {
         request.get(HostAndPort + '/api/uzas/'+this.myName, function (err, httpResponse, body) {
             var data = JSON.parse(body);
@@ -89,43 +88,138 @@ var Uza = class {
         });
 
     }
-
-    createUser_me() {
-        //console.log('req.body.name: this.myName = ', this.myName);   
-        request.post(HostAndPort + '/api/uzas', {
-            form: {
-                name : this.myName
-            }
-        }, function (err, httpResponse, body) {
-            if(err) {
-                console.log('request.post:   error =', err);
+    */
+    getDataUza( cb ) {
+        request.get(HostAndPort + '/api/uzas/'+this.myName, function (err, httpResponse, body) {
+            if( err ) {
+                cb( err );
                 return;
             }
-
-            var data = JSON.parse( body );
-            console.log('createUser_me rsp =', data);
-        
-            request.get(HostAndPort + '/api/uzas/'+data.name, function (err, httpResponse, body) {
-                console.log('request.get   data =', JSON.parse( body ) );
-                console.log('--------------------------------------------------------------------------------');
-            });
-        
+            var data = JSON.parse(body);
+            var uza = data.uza;
+            cb( err, uza ); // note: err == null at this point
+            //var bears = data.azu.bears;
+            //cb( err, bears ); // note: err == null at this point
         });
-        
+    }
+    
+    putDataUza(tdid, bears, cb) {
+        request.get(HostAndPort + '/api/uzas/'+this.myName, function (err, httpResponse, body) {
+            if( err ) {
+                cb( err );
+                return;
+            }
+            var data = JSON.parse(body);
+            var uza = data.uza;
+            if( !uza ) {
+                cb( null, { message: 'NG Entry not found', uza: data.uza} );
+                return;
+            }
+            request.put(HostAndPort + '/api/uzas/'+uza._id, {
+                form: {
+                    tdid : tdid,
+                    bears : bears
+                }
+                }, function (err, httpResponse, body) {                    
+                    if(err) {
+                        cb(err);
+                        return;
+                    }
+                    var data = JSON.parse(body);   //{"message":"Bear updated!","bear":{"_id":"5ae1813f60377420023f55cb","name":"9ee278a8-c068-4934-a2d7-9e8a977f44b3","__v":0,"dateStamp":"Thu Apr 26 2018 16:51:56 GMT+0900 (JST)","offer":{"quote":"No one fucks with The Jesus ","mqttofferin":"/de543deac2398cb8def/offerin","mqttanswerout":"/de543deac2398cb8def/answerout"},"timeStamp":1524729116718}}
+
+                    var uza = data.uza;
+                    cb( null, { message: 'OK Entry updated', uza: data.uza} );
+            });                      
+        });
+
     }
 
-    deleteUser_me()
+
+    getOrCreateUser( cb ) {
+        var that = this;
+        //console.log('req.body.name: this.myId = ', this.myId);
+        request.get(HostAndPort + '/api/uzas/'+this.myName, function (err, httpResponse, body) {
+            if(err) {
+                console.log('getOrCreateUser: request.get:   error =', err);
+                cb( err );
+                return;
+            }
+            var data = JSON.parse( body );
+            var uza = data.uza;
+
+            if( uza ) {
+                cb( null, { message: 'OK Entry already exists', uza: data.uza} );
+                return;
+            }
+            else //if( data.message == 'NG Entry not found') // create new
+            {
+                request.post(HostAndPort + '/api/uzas', {
+                    form: {
+                        name : that.myName
+                    }
+                }, function (err, httpResponse, body) {
+                    if(err) {
+                        console.log('request.post:   error =', err);
+                        cb(err);
+                        return;
+                    }
+                    var data = JSON.parse( body ); //{ message: 'OK User created', uza : uza }
+                    cb( null, { message: 'OK Entry created', uza: data.uza });
+                });        
+            }
+        });
+    }
+    /*
+    deleteUser_me( cb )
     {        
         request.delete(HostAndPort + '/api/uzas/'+this.myName, function (err, httpResponse, body) {
         //request.delete(HostAndPort + '/api/uzas/5add45ac88e11e2e9034fa6a', function (err, httpResponse, body) {
             if(err) {
                 console.log('request.delete:   error =', err);
+                cb( err );
                 return;
             }
             var data = JSON.parse(body);
             console.log('request.delete:   data =', data);
+            cb( err, data );
         });
     }
+    */
+    deleteUser( cb )
+    {        
+        request.get(HostAndPort + '/api/uzas/'+this.myName, function (err, httpResponse, body) {
+            if(err) {
+                console.log('deleteUser: request.get:   error =', err);
+                cb( err );
+                return;
+            }
+
+            var data = JSON.parse( body );
+            var uza = data.uza;
+            //console.log('deleteUser: request.get:   data =', data );            
+
+            if(!uza) // e.g. data = { message: 'Bear not found!', id: '9ee278a8-c068-4934-a2d7-9e8a977f44b3' }
+            {
+                //console.log('deleteUser: request.get:   err: no data._id');
+                cb( null, { message: 'OK No entry existed' } );
+                return;
+            }
+            request.delete(HostAndPort + '/api/uzas/'+uza._id, function (err, httpResponse, body) {
+                if(err) {
+                    console.log('deleteUser: request.delete:   error =', err);
+                    cb( err );
+                    return;
+                }
+                var data = JSON.parse(body);
+                //console.log('deleteUser: request.delete:   data =', data);
+                // data = { message: 'Successfully deleted' }
+                cb( null, { message: 'OK Successfully deleted' } );
+            });
+
+        });
+    }
+
+
 
     check_me() {
         //console.log('this.myName = ', this.myName);   
@@ -186,8 +280,10 @@ var Uza = class {
                 }
                 }, function (err, httpResponse, body) {
                     
-                    if(err)
-                        cb(err)
+                    if(err) {
+                        cb(err);
+                        return;
+                    }
 
                     cb( null, 'OK');
                     //console.log('=====================================================================');
