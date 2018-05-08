@@ -94,10 +94,14 @@ function update_rb2_bear() {
     
         var offer = { 
             quote: 'This Bear was set from rb2_c', 
-            mqttofferin :   'Xtbd_topic_base/makeOffer',
-            mqttanswerout : 'Xtbd_topic_base/sendAnswer',
+            mqttofferin :   'Ytbd_topic_base/makeOffer',
+            mqttanswerout : 'Ytbd_topic_base/sendAnswer',
         };
         
+        //var mid = mid.substr(0, mid.length-2) + '_' + '0';
+        offer.mqttofferin =   mid.substr(0, 10) + '/makeOffer';
+        offer.mqttanswerout = mid.substr(0, 10) + '/sendAnswer';
+
         mqttParam_1.mqttServer = 'mqtt://ocn.cloudns.org';
         mqttParam_1.topic_sendAnswer = offer.mqttanswerout; //'tbd_topic_base_sendAnswer'; 
         mqttParam_1.topic_makeOffer = offer.mqttofferin; // 'tbd_topic_base_makeOffer';
@@ -131,8 +135,8 @@ function update_rb2_bear() {
 }
 
 
-//var rb2_uza = new Uza('karel');
-var rb2_uza = new Uza('john');
+var rb2_uza = new Uza('karel');
+//var rb2_uza = new Uza('john');
 
 function update_rb2_uza( bearName ) {
 
