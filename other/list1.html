@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Bootstrap Example</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+
+        <!--
+        <title>List 1</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="BLE quadcopter controller">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+ 
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+        -->
+
+        <!--
+        <link rel="stylesheet" type="text/css" href="css/normal.css">
+        <link rel="stylesheet" type="text/css" href="css/control.css">
+        <script src="js/func.js"></script>
+        -->
+        <style>
+                .accordion {
+                    background-color: #eee;
+                    color: #444;
+                    cursor: pointer;
+                    /*padding: 18px;*/
+                    padding: 4px;
+                    width: 100%;
+                    border: none;
+                    text-align: left;
+                    outline: none;
+                    /*font-size: 15px;*/
+                    font-size: 10px;
+                    transition: 0.4s;
+                }
+                
+                .active, .accordion:hover {
+                    background-color: #ccc; 
+                }
+                
+                .panel {
+                    padding: 0 18px;
+                   /* display: none; */
+                    max-height: 0;
+                    background-color: white;
+                    overflow: hidden;
+
+                    transition: max-height 0.2s ease-out;
+                }
+            </style>
+    </head>
+    <body>
+                  
+    <!--        
+        <div id="mainX">
+            <h1>Quadcopter</h1>
+            <div id="main-message">
+    			<div id='button-connect' class="button-main-menu">
+                    Connect
+                </div>
+            </div>
+        </div>
+    -->
+
+<!--        
+        <div id='list'>
+            <ul class="list-inline">
+                <li class="list-inline-item"><a class="social-icon text-xs-center" target="_blank" href="#">FB</a></li>
+                <li class="list-inline-item"><a class="social-icon text-xs-center" target="_blank" href="#">G+</a></li>
+                <li class="list-inline-item"><a class="social-icon text-xs-center" target="_blank" href="#">T</li>
+            </ul>
+
+            <ul class="nav navbar-nav list-inline">
+                <li class="list-inline-item">FB</li>
+                <li class="list-inline-item">G+</li>
+                <li class="list-inline-item">T</li>
+            </ul>
+        </div>
+-->
+
+        <div class="container">
+            <h1>Hello World!</h1>
+            <p>Three equal width columns! Try to add a new div with class="col" inside the row class - this will create four equal-width columns.</p>
+
+            <button type='button' className='btn btn-primary' onclick="showHide()">Show/Hide</button>
+
+            <div class="row" style="display: flex;">
+
+                <div id="idLC" style="width:400px; height:200px; background-color:rgb(133, 190, 233); overflow:auto">
+                    <h4>Column 0</h4>
+                    <div className='list-group' id='dev-list'>
+                        <!-- we add stuff here with script -->
+                        
+                        <button class="accordion">Section 1</button>
+                        <div class="panel">
+                            <p>Lorem ipsum dolor sit amet ...</p>
+                        </div>
+
+                        <button class="accordion">Section 2</button>
+                        <div class="panel">
+                            <p>Lorem ipsum dolor sit amet ...</p>
+                        </div>
+
+                        <button class="accordion">Section 3</button>
+                        <div class="panel">
+                            <p>Lorem ipsum dolor sit amet ...</p>
+                        </div>
+
+                    </div>
+                    <p>Some text.. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</p>
+                </div>
+                <div id="idMC" style="width:90%; background-color:#aaa;">
+                    <h4>Column 1</h4>
+                    <p>Some text.. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</p>
+                    <ul className='list-inline text-right'>
+                        <li><button type='button' className='btn btn-primary' onclick="startScan">Start</button></li>
+                        <li><button type='button' className='btn btn-primary' onclick="stopScan">Stop</button></li>
+                    </ul>
+                </div>
+                <div id="idRC" style="width:100px; background-color:rgb(204, 223, 216);">
+                    <h4>Column 2</h4>
+                    <div className='list-group' id='device-list'>
+                        <!-- we add stuff here with script -->
+                    </div>
+                    <p>Some text.. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</p>
+                </div>
+            </div>
+            <script>
+                var acc = document.getElementsByClassName("accordion");
+                var i;
+                
+                for (i = 0; i < acc.length; i++) {
+                    acc[i].addEventListener("click", function() {
+                        this.classList.toggle("active");
+                        var panel = this.nextElementSibling;
+                        /*
+                        if (panel.style.display === "block") {
+                            panel.style.display = "none";
+                        } else {
+                            panel.style.display = "block";
+                        }
+                        */
+                        if (panel.style.maxHeight) {
+                            panel.style.maxHeight = null;
+                        } else {
+                            panel.style.maxHeight = panel.scrollHeight + "px";
+                        } 
+                    });
+                }
+            </script>
+
+            <div class="row">
+                <div class="col" style="width:20px; background-color:rgb(204, 223, 216);">COL 1</div>
+
+                <div class="col" style="background-color:orange;">
+
+                    <ul className='list-inline text-right'>
+                        <li><button type='button' className='btn btn-primary' onclick="startScan">Start</button></li>
+                        <li><button type='button' className='btn btn-primary' onclick="stopScan">Stop</button></li>
+                    </ul>
+                    <div className='panel panel-default'>
+                        <div className='panel-heading'>Discovered Devices</div>
+                        <div className='panel-body'>
+                            <p>Bluetooth low energy devices will be shown below as they are found.
+                            Click a device to connect and interact with it.</p>
+                        </div>
+        
+                        <!--
+                        <div className='list-group' id='device-list'>
+                        {this.state.devices.map(d => <Link to={'connect/'+d.index} className='list-group-item' key={d.index}>{d.name} [{d.address}]</Link>)}
+                        </div>
+                        -->
+                          
+                        <div class="list-group">
+                            <a href="#" class="list-group-item list-group-item-action">Action item</a>
+                            <a href="#" class="list-group-item list-group-item-action list-group-item-success">Success item</a>
+                            <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Secondary item</a>
+                            <a href="#" class="list-group-item list-group-item-action list-group-item-info">Info item</a>
+                            <a href="#" class="list-group-item list-group-item-action list-group-item-warning">Warning item</a>
+                            <a href="#" class="list-group-item list-group-item-action list-group-item-danger">Danger item</a>
+                            <a href="#" class="list-group-item list-group-item-action list-group-item-primary">Primary item</a>
+                            <a href="#" class="list-group-item list-group-item-action list-group-item-dark">Dark item</a>
+                            <a href="#" class="list-group-item list-group-item-action list-group-item-light">Light item</a>
+                        </div> 
+                    </div>
+                </div>
+          
+                <div class="col" style="background-color:rgb(46, 141, 106); width:10%;">Col 3</div>
+
+            </div>
+        </div> <!-- container -->
+
+
+
+        <!--
+        <div id='list1'>
+
+            <ul className='list-inline text-right'>
+                <li><button type='button' className='btn btn-primary' onclick="startScan">Start</button></li>
+                <li><button type='button' className='btn btn-primary' onclick="stopScan">Stop</button></li>
+            </ul>
+            <hr/>
+            <div className='panel panel-default'>
+                <div className='panel-heading'>Discovered Devices</div>
+                <div className='panel-body'>
+                    <p>Bluetooth low energy devices will be shown below as they are found.
+                    Click a device to connect and interact with it.</p>
+                </div>
+                
+                //<div className='list-group' id='device-list'>
+                //    {this.state.devices.map(d => <Link to={'connect/'+d.index} className='list-group-item' key={d.index}>{d.name} [{d.address}]</Link>)}
+                //</div>
+                
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action">Action item</a>
+                    <a href="#" class="list-group-item list-group-item-action list-group-item-success">Success item</a>
+                    <a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Secondary item</a>
+                    <a href="#" class="list-group-item list-group-item-action list-group-item-info">Info item</a>
+                    <a href="#" class="list-group-item list-group-item-action list-group-item-warning">Warning item</a>
+                    <a href="#" class="list-group-item list-group-item-action list-group-item-danger">Danger item</a>
+                    <a href="#" class="list-group-item list-group-item-action list-group-item-primary">Primary item</a>
+                    <a href="#" class="list-group-item list-group-item-action list-group-item-dark">Dark item</a>
+                    <a href="#" class="list-group-item list-group-item-action list-group-item-light">Light item</a>
+                </div> 
+            </div>
+        </div>
+        -->
+
+        <div id="footerX">
+            <p>THIS IS THE FOOTER</p>
+            <!--
+            <img src="img/nordic.png" id="nordiclogo" class="footer-logo"></img>
+            -->
+            <div id='button-rev' class="button"> Reverse  </div>
+            <div>
+                <ul id='revul' class="menu1">
+                        ...
+                </ul>
+            </div>
+		</div>
+        <script>
+            var state = { isScanning : false,
+                            fat : 42
+            }
+            function getStateIsScanning()
+            {
+                return( '' );
+                //return( state.isScanning );
+            }
+            // Function for short-hand access to adding eventListener to element
+            function addListener(selector, eventType, func) {
+                return document.querySelector(selector).addEventListener(eventType, func);
+            }
+            // Function for short-hand access to querySelector
+            function select(query) {
+                return document.querySelector(query);
+            }
+        </script>
+
+        <script>
+            var showHideColumn = 0; 
+            function showHide() {
+                console.log('showHide showHideColumn =', showHideColumn);
+                if(showHideColumn == 0) {
+                    document.getElementById("idLC").style.width = "100%";
+                    document.getElementById("idLC").style.display = "block";
+                    //document.getElementById("idLC").style.display = "contents";
+                    //document.getElementById("idLC").style.display = "flex";
+
+                    //document.getElementById("idMC").style.width = "0px";
+                    document.getElementById("idMC").style.display = "none";                    
+                    //document.getElementById("idRC").style.width = "0px";
+                    document.getElementById("idRC").style.display = "none";                    
+                }
+                if(showHideColumn == 1) {
+                    //document.getElementById("idLC").style.width = "0px";
+                    document.getElementById("idLC").style.width = "40px";
+                    document.getElementById("idLC").style.display = "none";                    
+                    document.getElementById("idMC").style.width = "50%";
+                    document.getElementById("idMC").style.display = "block";                    
+                    //document.getElementById("idRC").style.width = "0px";
+                    document.getElementById("idRC").style.display = "none";                    
+                }
+                if(showHideColumn == 2) {
+                    //document.getElementById("idLC").style.width = "0px";
+                    document.getElementById("idLC").style.display = "none";                    
+                    //document.getElementById("idMC").style.width = "0px";
+                    document.getElementById("idMC").style.display = "none";                    
+                    document.getElementById("idRC").style.width = "100%";
+                    document.getElementById("idRC").style.display = "block";                    
+                }
+                showHideColumn += 1;
+                if(showHideColumn > 2)
+                    showHideColumn = 0;
+
+                
+                document.getElementById('device-list').style.fontSize = "10px";
+                var L = select('#device-list').innerHTML  = "<li> One </li><li> Two </li>";
+                console.log('device-list =', L)
+                L += "<div className='list-group-item'> Entry <button style='background-color: #4CAF50; border-radius: 8px;'> BBB </button> </div>";
+                console.log('device-list =', L)
+                select('#device-list').innerHTML  = L;
+    /*
+                var L = select('#device-list').innerHTML; // = "<li> One </li><li> Two </li>";
+                console.log('device-list =', L)
+                L += "<div className='list-group-item'> Entry </div>";
+    */
+                //<div className='list-group' id='device-list'>
+                //    {this.state.devices.map(d => <Link to={'connect/'+d.index} className='list-group-item' key={d.index}>{d.name} [{d.address}]</Link>)}
+                //</div>
+
+            }
+            function startScan() {
+                console.log('startScan');
+            }
+            function stopScan() {
+                console.log('stopScan');
+            }
+
+            var dir = true;
+            addListener('#button-rev', 'click', revList);
+            function revList() {
+                console.log('revList');
+                console.log('this.state =', state);
+                if(dir) {
+                    dir = false;
+                    select('#revul').innerHTML = "<li> One </li><li> Two </li>";
+                } else {
+                    dir = true;
+                    select('#revul').innerHTML = "<li> <p>Two</p><p>Two</p> </li><li> One </li>";
+                }
+            } 
+            // Button actions
+            //addListener('#button-connect', 'click', start);
+            //addListener('#button-connectX', 'click', startX);
+            // Show joysticks
+            
+            function start() {
+                console.log('start');
+                select('#fullscreenX').innerHTML = "<p> fullscreen WTF! </p>";
+                //select('#mainX').innerHTML = "<p> main WTF! </p>";
+                select('#mainX').innerHTML = "<h2>Twincopter</h2>  <div id='main-messageX'> <div id='button-connectX' class='button-main-menu'> ConnectX </div> </div>";
+                select('#footerX').innerHTML = "<p> Footer WTF! </p>";
+                //select('#main').innerHTML = '<object type="text/html" data="joysticks.html" class="loaded-content" ></object>';
+                /*
+                $("#main").load("joysticks.html");
+                toggleFullscreen();
+                connect();
+                */
+                addListener('#button-connectX', 'click', startX);
+            }
+
+            function startX() {
+                console.log('startX');
+                select('#fullscreenX').innerHTML = "<p> fullscreen WTF! </p>";
+                select('#mainX').innerHTML = "<p> main WTF! </p>";
+                select('#footerX').innerHTML = "<p> Footer WTF! </p>";
+            }
+		</script>
+
+        <script>
+            /*
+            // Enable fullscreen
+            function toggleFullscreen(elem) {
+              elem = elem || document.documentElement;
+              if (!document.fullscreenElement && !document.mozFullScreenElement &&
+                !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                if (elem.requestFullscreen) {
+                  elem.requestFullscreen();
+                } else if (elem.msRequestFullscreen) {
+                  elem.msRequestFullscreen();
+                } else if (elem.mozRequestFullScreen) {
+                  elem.mozRequestFullScreen();
+                } else if (elem.webkitRequestFullscreen) {
+                  elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+                }
+				$('#fullscreen').show();
+                $('#fullscreen').html("<img src='img/fullscreen-exit.png'>");
+              } else {
+                if (document.exitFullscreen) {
+                  document.exitFullscreen();
+                } else if (document.msExitFullscreen) {
+                  document.msExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                  document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) {
+                  document.webkitExitFullscreen();
+                }
+                $('#fullscreen').html("<img src='img/fullscreen-enter.png'>");
+              }
+            }
+            document.getElementById('fullscreen').addEventListener('click', function() {
+                toggleFullscreen();
+            });
+            */
+        </script>
+        <!--
+        <script src="js/ble.js"></script>
+        <script src="js/func.js"></script>
+        <script src="js/nipple.js"></script>
+        <script src="js/gamepad.js"></script>
+        -->
+    </body>
+</html>

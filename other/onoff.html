@@ -1,0 +1,149 @@
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Quadcopter</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="BLE quadcopter controller">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/normal.css">
+        <link rel="stylesheet" type="text/css" href="css/control.css">
+        <!--
+        <script src="js/func.js"></script>
+        -->
+    </head>
+    <body>
+                <!-- -->
+        <div id="orientation-message">
+            <div>Please rotate the device 90&#176;
+                <!--
+                <div id="rotate-img">
+                    <img src="img/rotate.png">
+               </div>
+                -->
+            </div>
+        </div>
+            <!--    -->
+
+        <div id="fullscreenX">
+        </div>
+
+        <div id="mainX">
+            <h1>Quadcopter</h1>
+            <div id="main-message">
+    			<div id='button-connect' class="button-main-menu">
+                    Connect
+                </div>
+            </div>
+        </div>
+
+        <div id="footerX">
+            <p>THIS IS THE FOOTER</p>
+            <!--
+            <img src="img/nordic.png" id="nordiclogo" class="footer-logo"></img>
+            -->
+            <div id='button-rev' class="button-main-menu"> Reverse  </div>
+            <div>
+                <ul id='revul' class="menu1">
+                        ...
+                </ul>
+            </div>
+		</div>
+
+		<script>
+            // Function for short-hand access to adding eventListener to element
+            function addListener(selector, eventType, func) {
+                return document.querySelector(selector).addEventListener(eventType, func);
+            }
+            // Function for short-hand access to querySelector
+            function select(query) {
+                return document.querySelector(query);
+            }
+        </script>
+
+        <script>
+            var dir = true;
+            addListener('#button-rev', 'click', revList);
+            function revList() {
+                console.log('revList');
+                if(dir) {
+                    dir = false;
+                    select('#revul').innerHTML = "<li> One </li><li> Two </li>";
+                } else {
+                    dir = true;
+                    select('#revul').innerHTML = "<li> <p>Two</p><p>Two</p> </li><li> One </li>";
+                }
+            } 
+            // Button actions
+            addListener('#button-connect', 'click', start);
+            //addListener('#button-connectX', 'click', startX);
+            // Show joysticks
+            
+            function start() {
+                console.log('start');
+                select('#fullscreenX').innerHTML = "<p> fullscreen WTF! </p>";
+                //select('#mainX').innerHTML = "<p> main WTF! </p>";
+                select('#mainX').innerHTML = "<h2>Twincopter</h2>  <div id='main-messageX'> <div id='button-connectX' class='button-main-menu'> ConnectX </div> </div>";
+                select('#footerX').innerHTML = "<p> Footer WTF! </p>";
+                //select('#main').innerHTML = '<object type="text/html" data="joysticks.html" class="loaded-content" ></object>';
+                /*
+                $("#main").load("joysticks.html");
+                toggleFullscreen();
+                connect();
+                */
+                addListener('#button-connectX', 'click', startX);
+            }
+
+            function startX() {
+                console.log('startX');
+                select('#fullscreenX').innerHTML = "<p> fullscreen WTF! </p>";
+                select('#mainX').innerHTML = "<p> main WTF! </p>";
+                select('#footerX').innerHTML = "<p> Footer WTF! </p>";
+            }
+		</script>
+
+        <script>
+            /*
+            // Enable fullscreen
+            function toggleFullscreen(elem) {
+              elem = elem || document.documentElement;
+              if (!document.fullscreenElement && !document.mozFullScreenElement &&
+                !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                if (elem.requestFullscreen) {
+                  elem.requestFullscreen();
+                } else if (elem.msRequestFullscreen) {
+                  elem.msRequestFullscreen();
+                } else if (elem.mozRequestFullScreen) {
+                  elem.mozRequestFullScreen();
+                } else if (elem.webkitRequestFullscreen) {
+                  elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+                }
+				$('#fullscreen').show();
+                $('#fullscreen').html("<img src='img/fullscreen-exit.png'>");
+              } else {
+                if (document.exitFullscreen) {
+                  document.exitFullscreen();
+                } else if (document.msExitFullscreen) {
+                  document.msExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                  document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) {
+                  document.webkitExitFullscreen();
+                }
+                $('#fullscreen').html("<img src='img/fullscreen-enter.png'>");
+              }
+            }
+            document.getElementById('fullscreen').addEventListener('click', function() {
+                toggleFullscreen();
+            });
+            */
+        </script>
+        <!--
+        <script src="js/ble.js"></script>
+        <script src="js/func.js"></script>
+        <script src="js/nipple.js"></script>
+        <script src="js/gamepad.js"></script>
+        -->
+    </body>
+</html>

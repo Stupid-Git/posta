@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+
+
+    <!--
+    <link rel="stylesheet/less" type="text/css" href="css/nrf.less" />    
+    -->
+    <!--
+    <script src="less.js" type="text/javascript"></script>
+    -->
+
+    <style>
+        /*
+    Spinner {
+        width: 16px;
+        height: 16px;
+        visibility: true;       
+    }
+     @icon-color: #0080B7;
+     */
+ @keyframes rotator {
+     0%   { transform: rotate(0deg); }
+     100% { transform: rotate(360deg); }
+ }
+.tdspinner {
+     width: 16px;
+     height: 16px;
+
+     border-radius: 50%;
+     background: linear-gradient(to right, #0080B7 10%, rgba(255, 255, 255, 0) 42%);
+     position: relative;
+     display: inline-block;
+     animation: rotator 1.4s infinite linear;
+     transform: translateZ(0);
+ }
+ .tdspinner:before {
+     width: 50%;
+     height: 50%;
+     background: #0080B7;
+     border-radius: 100% 0 0 0;
+     position: absolute;
+     top: 0;
+     left: 0;
+     content: '';
+ }
+ .tdspinner:after {
+     background: #fff;
+     width: 75%;
+     height: 75%;
+     border-radius: 50%;
+     content: '';
+     margin: auto;
+     position: absolute;
+     top: 0;
+     left: 0;
+     bottom: 0;
+     right: 0;
+ 
+ }
+
+/* device-details-light-border-color: rgb(207, 207, 207); */
+
+#discoveredDevicesContainer {
+  padding: 10px 15px;
+}
+
+#discoveredDevicesContainer.tdspinner {
+  margin-left: 10px;
+}
+
+#discoveredDevicesContainer.discovery-options-expand {
+  margin-top: 3px;
+}
+#discoveredDevicesContainer.discovery-options-expand.span {
+  font-size: 12px;
+} 
+
+#discoveredDevicesContainer > padded-row {
+     border-bottom: 1px solid rgb(207, 207, 207);
+     padding-bottom: 5px;
+/*     i {
+       font-size: 14px;
+     }
+     */
+   }
+
+#discoveredDevicesContainer.discovery-options 
+     label {
+       font-size: 12px;
+       font-weight: normal;
+       margin-right: 10px;
+     }
+
+#discoveredDevicesContainer.discovery-options 
+     .checkbox {
+       margin-top:5px;
+       margin-bottom: 3px;
+     }
+
+
+#discoveredDevicesContainer.discovery-options 
+.form-control {
+       width: 160px;
+       height: 22px;
+       font-size: 12px;
+       padding-left: 10px;
+     }
+
+#discoveredDevicesContainer.discovery-options 
+     .form-group {
+       margin-bottom: 0px;
+     }
+
+#discoveredDevicesContainer.discovery-options 
+     input {
+       margin-top: 2px;
+     }
+
+   /* 
+#discoveredDevicesContainer.discovery-options {
+     label {
+       font-size: 12px;
+       font-weight: normal;
+       margin-right: 10px;
+     }
+     .checkbox {
+       margin-top:5px;
+       margin-bottom: 3px;
+     }
+     .form-control {
+       width: 160px;
+       height: 22px;
+       font-size: 12px;
+       padding-left: 10px;
+     }
+     .form-group {
+       margin-bottom: 0px;
+     }
+     input {
+       margin-top: 2px;
+     }
+   }
+*/
+</style>
+ 
+<style>
+body {
+    font-family: "Lato", sans-serif;
+}
+
+.sidenav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+}
+
+.sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidenav a:hover {
+    color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+
+
+
+
+.btn-nordic {
+   border-radius: 0px
+ }
+</style>
+</head>
+<body>
+
+<div id="mySidenav" class="sidenav">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+  <a href="#">About</a>
+  <a href="#">Services</a>
+  <a href="#">Clients</a>
+  <a href="#">Contact</a>
+  <div class='list-group' id='dev-list'>
+        <!-- we add stuff here with script -->
+        
+        <button class="accordion">Section 1</button>
+        <div class="panel">
+            <p>Lorem ipsum dolor sit amet ...</p>
+        </div>
+
+        <button class="accordion">Section 2</button>
+        <div class="panel">
+            <p>Lorem ipsum dolor sit amet ...</p>
+        </div>
+
+        <button class="accordion">Section 3</button>
+        <div class="panel">
+            <p>Lorem ipsum dolor sit amet ...</p>
+        </div>
+
+    </div>
+</div>
+
+<div id="idMain">
+  <h2>Animated Sidenav Example</h2>
+  <p>Click on the element below to open the side navigation menu.</p>
+  <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
+
+
+    <hr/>
+    <div id="discoveredDevicesContainer" style="padding: 10px 15px;">
+        <div>
+            <h4>
+                Discovered devices
+                <!-- <Spinner visible=true></Spinner> // {isScanning} /> -->
+                <div id="idTdspinner" class="tdspinner" style="margin-left: 10px;"></div> <!-- {isScanning} /> -->
+            </h4>
+        </div>
+<!-- -->
+        <div class="padded-row" style=" border-bottom: 1px solid rgb(207, 207, 207); padding-bottom: 5px;">
+            <button title="Start scan (Alt+S)"  class="btn btn-primary btn-sm btn-nordic padded-row"
+                    onclick="onScanClicked()">
+                
+                <span class="iconName" /> Start scan
+            </button>
+
+            <button
+                title="Clear list (Alt+C)"
+                onclick="clearDevicesList()"
+                type="button"
+                class="btn btn-primary btn-sm btn-nordic padded-row"
+            >
+                <span class="icon-trash" />Clear
+            </button>
+        </div>
+
+        <div class="discovery-options-expand">
+            <span onclick="toggleOptionsExpanded()" role="button" tabIndex=0>
+                <i class=dirIcon />Options
+            </span>
+            {discoveryOptionsDiv}
+        </div>
+
+    </div>
+<!-- -->        
+<!--
+        <div style={{ paddingTop: '0px' }}>
+            {
+                discoveredDevices.valueSeq().map((device, address) => {
+                    const key = `${address}`;
+                    return (
+                        <DiscoveredDevice
+                            key={key}
+                            device={device}
+                            standalone={false}
+                            adapterIsConnecting={adapterIsConnecting}
+                            isConnecting={device.isConnecting}
+                            onConnect={connecToDevice}
+                            onCancelConnect={cancelConnect}
+                            onToggleExpanded={toggleExpanded}
+                        />
+                    );
+                })
+            }
+        </div>
+      -->
+</div>
+
+
+</div>
+
+<script>
+    document.getElementById("idMain").style.margin.left="200px";
+    document.getElementById("mySidenav").style.width = "150px";
+function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+}
+
+function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+}
+</script>
+     
+</body>
+</html> 

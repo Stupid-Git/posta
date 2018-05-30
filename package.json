@@ -16,6 +16,7 @@
     "cors": "^2.8.4",
     "delay": "^2.0.0",
     "jsonfile": "^4.0.0",
+    "jszip": "^3.1.5",
     "lexical-scope": "^1.2.0",
     "mqtt": "^2.16.0",
     "noble-device": "^1.4.1",
@@ -23,6 +24,7 @@
     "request": "^2.83.0",
     "socket.io-client": "^2.0.4",
     "socketio": "^1.0.0",
+    "underscore": "^1.9.0",
     "wrtc": "0.0.67"
   }
 }

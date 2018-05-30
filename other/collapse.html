@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bootstrap Example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+
+    <!-- Add icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<style>
+@keyframes rotator {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.tdspinner {
+    width: 16px;
+    height: 16px;
+
+    border-radius: 50%;
+    background: linear-gradient(to right, #0080B7 10%, rgba(255, 255, 255, 0) 42%);
+    position: relative;
+    display: inline-block;
+    animation: rotator 1.4s infinite linear;
+    transform: translateZ(0);
+}
+.tdspinner:before {
+    width: 50%;
+    height: 50%;
+    background: #0080B7;
+    border-radius: 100% 0 0 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: '';
+}
+.tdspinner:after {
+    background: #fff;
+    width: 75%;
+    height: 75%;
+    border-radius: 50%;
+    content: '';
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+
+}
+</style>
+
+<body>
+
+    <!--
+    <div class="container">
+        <h2>Show Collapsible Content By Default</h2>
+        <p>Add the show class next to the collapse class to show the content by default.</p>
+        <p>Click on the button to toggle between showing and hiding content.</p>
+
+        <button type="button" class="btn btn-primary" onclick="fillErUp()"> Fill Up</button>
+    </div>
+    -->
+
+    <!--  ################################################################################## -->
+    <div id="scanBoxOuter" style="float: right;  border: 1px solid black; width:300px; height:100%; background-color:rgb(229, 235, 240); overflow:auto">
+
+        <div id="scanBoxInner" style="background-color:#fff;margin-left: 10px;margin-right: 10px;margin-top: 10px;margin-bottom: 10px;">
+
+            <div>
+                <h4>Discovered devices                
+                    <div id="idTdspinner" class="tdspinner" style="margin-left: 10px;"></div> <!-- {isScanning} /> -->
+                </h4>
+            </div>
+
+            <button id="onScanBtn" 
+                title="Start scan (Alt+S)"
+                onclick="onScanClicked(this)"
+                class="btn btn-primary btn-sm btn-nordic padded-row">
+                <i class="fa fa-play"></i>Start scan
+            </button>
+
+            <button
+                title="Clear list (Alt+C)"
+                onclick="clearDevicesList(this)"
+                type="button"
+                class="btn btn-primary btn-sm btn-nordic padded-row">
+                <i class="fa fa-trash"></i>  Clear
+            </button>
+            <br/>
+
+            <button id="onShowOptionsBtn" 
+                    title="Show Options (Alt+?)"
+                    onclick="onShowOptionsClicked(this)"
+                    class="btn collapsed"
+                    type="button" data-toggle="collapse" data-target="#theOptions" 
+                    style="font-size:12px; height:18px; padding-bottom:0px; padding-top:0px; background-color: inherit;">
+                    <i class="fa fa-angle-right"></i> Options
+            </button>
+
+            <div id="theOptions" class="collapse" style="font-size: 12px;">
+                    <label for="checkid"  style="word-wrap:break-word">
+                        <input  id="rssiCheck" type="checkbox" onclick="onRssiCheckboxClicked()" style="vertical-align:middle;"/>    Sort by signal strength
+                    </label>
+                    <!--
+                    <p id="rssiText" style="display:none">Checkbox is CHECKED!</p>
+                    -->
+                    <label for="filterTextid"  style="word-wrap:break-word">
+                        Filter: <input  id="filterTextid" style="width:70%; vertical-align:middle;" placeholder="Device name or Address"/>
+                    </label>
+
+            </div>
+
+            <div id="theList">
+                <hr style="margin-top: 2px; margin-bottom: 2px;">
+<!--
+                <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#demo">Simple collapsible</button>
+                <div id="demo" class="collapse show">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                </div>
+            
+                <hr style="margin-top: 2px; margin-bottom: 2px;">
+
+                <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#demo">Simple collapsible</button>
+                <div id="demo" class="collapse">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                </div>
+-->                
+            </div>
+        </div>
+    </div> <!-- id="scanBoxOuter" -->
+
+
+    <script>
+        // Function for short-hand access to adding eventListener to element
+        function addListener(selector, eventType, func) {
+            return document.querySelector(selector).addEventListener(eventType, func);
+        }
+        // Function for short-hand access to querySelector
+        function select(query) {
+            return document.querySelector(query);
+        }
+    </script>
+
+    <script>
+        var devicesListCount = 0;
+        function fillErUp() {
+            var i;
+            var n = 4;
+
+            for( i=0; i<n; i++) {
+                addNextDummyDevice();
+            }
+        }
+
+        function addNextDummyDevice() {
+            console.log('after timeout');
+
+            var i = devicesListCount;
+            var name = 'TR4-BlahBlah'
+            var rssi = -102;
+            var id = 'AA:BB:DE:F2:12:04';
+            var msd ='92-03-32-01-2E-58-00-01-FE-04-EE-EE-05-01-01-00-00-00-00-00-00-00-00-00-00-00'
+            if( i < scanDataA.length)
+            {
+                name = scanDataA[i].name;
+                rssi = scanDataA[i].rssi;
+                id = scanDataA[i].id;
+                msd = scanDataA[i].msd;
+            }
+
+            var L = "";
+
+            //L += '<hr/>';
+            L += '<hr style="margin-top: 2px; margin-bottom: 2px;">';
+
+            L += '<a style="font-size:16px; font-weight: bold;">' + name + '<a>';
+        //L += '<a style="float: right;">-42 dBm []<a> <br/>';
+        //L += '<a style="font-size:12px; float:right;">-42 dBm <i class="fa fa-signal"></i>    <a><br/>';
+            L += '<a style="font-size:12px; float:right;">' + rssi + 'dBm <i class="fa fa-signal"></i>    <a><br/>';
+
+            L += '<a style="font-size:12px;">' + ' ' + id + ' ' + '<a>';
+
+            L += '<button type="button" class="btn btn-primary" idxNum="' + i + '" ';
+            L += 'style=" float:right; font-size:12px; height:18px; padding-bottom:0px; padding-top:0px;" ';
+            L += 'onclick=onConnectClicked(this) >';
+            L += 'Connect <i class="fa fa-link"></i>';
+            L += '</button>';
+
+            L += '<br/>';
+            L += '<button type="button" class="btn btn-primary collapsed" data-toggle="collapse" data-target="#demo' + i + '" ';
+            L += 'style="font-size:10px; height:18px; padding-bottom:0px; padding-top:0px;" ';
+            L += 'onclick=onDetailsClicked(this) >';
+            //L += '[ ] Details';
+            L += '<i class="fa fa-angle-right"></i> Details';
+            L += '</button>';
+
+        //L += '<div id="demo' + i + '" class="collapse show">';
+            L += '<div id="demo' + i + '" class="collapse" style="font-size:12px; width:inherit; word-wrap: break-word;">';
+
+            L += '<strong>Address type:</strong> RandomStatic <br>';
+            L += '<strong>Advertising type:</strong> <br>';
+            L += 'Connectable undirected <br>';
+            L += '<strong>Flags:</strong> LeGeneralDiscMode <br>';
+            L += 'BrEdrNotSupported <br>';
+            L += 'LeOnlyLimitedDiscMode <br>';
+            L += 'LeOnlyGeneralDiscMode <br>';
+            L += '<strong>ManufacturerSpecificData:</strong> <br>';
+            L += msd + '<br>';
+            L += '</div>';
+            
+            select('#theList').innerHTML += L;
+            devicesListCount++;
+        }
+
+        function clearDevicesList(objButton) {
+            select('#theList').innerHTML = "";
+            var L = "";
+            //L += '<hr/>';
+            //L += '<hr style="margin-top: 2px; margin-bottom: 2px;">';
+
+            select('#theList').innerHTML = L;
+            devicesListCount = 0;
+        }
+
+        var dummy_TimerHandle = null;
+        var dummyTimeout = 1000;
+        
+        var scanning = 0;
+        var testingScanCount = 0;
+
+        function on_Timeout() {
+            console.log('timeout expired');
+            addNextDummyDevice();
+            if(testingScanCount<3) {
+                testingScanCount++;
+                setTimeout( on_Timeout, dummyTimeout); 
+            }
+        }
+
+        function onScanClicked(objButton) {
+            console.log('objButton =', objButton);
+            //select('#onScanBtn').innerHTML = "";
+            //var btn = document.getElementById("onScanBtn");
+            //btn.children[0] = "i.fa.fa-stop";
+            //btn.value = "Stop Scan";        
+            if (scanning == 0) {
+                scanning = 1;
+                //$find('<%=FileAdminRadGrid.ClientID %>').get_masterTableView().showFilterItem();
+                objButton.innerHTML = '<i class="fa fa-stop"></i> Stop scan';
+                document.getElementById("idTdspinner").style.visibility = "visible";
+                clearDevicesList( null );
+
+                dummyTimeout = 500;
+                testingScanCount = 0;
+                console.log('before timeout');
+                //dummy_TimerHandle = setTimeout( addNextDummyDevice , dummyTimeout);
+                dummy_TimerHandle = setTimeout( on_Timeout, dummyTimeout);
+
+            }
+            else {
+                scanning = 0;
+                //$find('<%=FileAdminRadGrid.ClientID %>').get_masterTableView().hideFilterItem();
+                objButton.innerHTML = '<i class="fa fa-play"></i> Start scan';
+                document.getElementById("idTdspinner").style.visibility = "hidden";
+            }
+        }
+
+        var showOptions = 0;
+        function onShowOptionsClicked(objButton) {
+            /*
+            console.log('objButton =', objButton);
+            if (showOptions == 0) {
+                showOptions = 1;
+                objButton.innerHTML = '<i class="fa fa-angle-down"></i> Options';
+            }
+            else {
+                showOptions = 0;
+                objButton.innerHTML = '<i class="fa fa-angle-right"></i> Options';
+            }
+            */
+
+            console.log('objButton.outerHTML =', objButton.outerHTML);
+            var pos = objButton.outerHTML.search('collapsed');
+            console.log('onDetailsClicked: pos of collapsed =', pos);
+            var wasCollapsed;
+            if(pos >= 0)
+                wasCollapsed = 1;
+            else
+                wasCollapsed = 0;
+                
+            if (wasCollapsed == 1) {
+                objButton.innerHTML = '<i class="fa fa-angle-down"></i> Options';
+            }
+            else {
+                objButton.innerHTML = '<i class="fa fa-angle-right"></i> Options';
+            }
+
+        }
+
+
+        function onConnectClicked(objButton) {
+            //console.log('onConnectClicked objButton =', objButton);
+            //console.log('onConnectClicked objButton.outerHTML =', objButton.outerHTML);
+
+            var s = objButton.outerHTML;
+            //console.log(' s =', s);
+            var l = s.length;
+            var a = s.search('idxnum="');
+            //console.log(' a =', a);
+            var ss = s.substr( a + 8, l - (a + 8) );
+            //console.log(' ss =', ss);
+            var a = ss.search('"');
+            var sidx = ss.substr( 0, a );
+            console.log('Index of element to connect to idxnum =', sidx );
+        }
+
+        function onDetailsClicked(objButton) {
+            console.log('objButton.outerHTML =', objButton.outerHTML);
+            var pos = objButton.outerHTML.search('collapsed');
+            console.log('onDetailsClicked: pos of collapsed =', pos);
+            var wasCollapsed;
+            if(pos >= 0)
+                wasCollapsed = 1;
+            else
+                wasCollapsed = 0;
+                
+            if (wasCollapsed == 1) {
+                objButton.innerHTML = '<i class="fa fa-angle-down"></i> Details';
+            } else {
+                objButton.innerHTML = '<i class="fa fa-angle-right"></i> Details';
+            }
+        }
+
+        function onRssiCheckboxClicked() {
+            var checkBox = document.getElementById("rssiCheck");
+            var text = document.getElementById("rssiText");
+            if (checkBox.checked == true) {
+                copyDummyR();
+                //text.style.display = "block";
+            } else {
+                copyDummy();
+                //text.style.display = "none";
+            }
+        }
+
+        class ScanD {
+            constructor( i )
+            {        
+                this.idx = i;
+            }
+        }
+
+        var scanDA = [];
+        var scanDataA = [];
+        function fillDummy() {
+            scanDA = [];
+            var n = 6;
+            var i;
+            for(i=0 ; i<n; i++) {
+                var scanD = new ScanD(i);
+                scanD.name = 'TR4_' + i + 'Dumbo';
+                scanD.rssi = -87 + (3*i);
+                scanD.id = 'd013dfe0c91' + i;
+                scanD.msd = '92-03-32-01-2E-58-00-01-FE-04-EE-EE-05-01-01-00-00-00-00-00-00-00-00-00-00-00';
+                scanDA.push( scanD );
+            }
+
+            for(i=0 ; i<n; i++) {
+                var scanD = scanDA[i];
+                console.log('scanD.idx =', scanD.idx, scanD.name, scanD.rssi, scanD.id, scanD.msd );
+            }
+        }
+
+        function copyDummy()
+        {
+            var n = scanDA.length;
+            var i;
+            scanDataA = [];
+            for(i=0 ; i<n; i++) {
+                scanDataA.push( scanDA[i] );
+            }        
+        }
+        function copyDummyR()
+        {
+            var n = scanDA.length;
+            var i;
+            scanDataA = [];
+            for(i=0 ; i<n; i++) {
+                scanDataA.push( scanDA[ (n - i) - 1] );
+            }        
+        }
+
+        function init() {
+            scanning = 1;
+            var btn = document.getElementById("onScanBtn"); // this gets the html code
+            //var btn = document.querySelector("#onScanBtn");
+            console.log('btn =', btn);
+            onScanClicked( btn );
+            /*
+            showOptions = 1;
+            var btn = document.getElementById("onShowOptionsBtn");
+            console.log('btn =', btn);
+            onShowOptionsClicked( btn );
+            */
+            fillDummy();
+            copyDummy();
+        }
+
+        init();
+    </script>
+</body>
+</html>
